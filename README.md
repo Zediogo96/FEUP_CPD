@@ -1,6 +1,6 @@
 # CPD Projects
 
-CPD Projects of group T06G12;.
+CPD Projects of group T06G12.
 
 Group members:
 
