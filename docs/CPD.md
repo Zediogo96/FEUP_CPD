@@ -51,7 +51,6 @@ The problem presented on the project consists in the implementation of various v
     This version of the algorithm is an improvement of the previous one, in which the elements of the resulting matrix are calculated by using a techinque of row-by-row multiplication - elements in a row of the first matrix are multiplied by the corresponding element in each row of the second matrix and the result accumulated in the respective position of the resulting matrix. Doing so, each value of the final matrix is not computed at once, but the lines are gradually filled. It is important to note that this algorithm can be considered an improvement because it takes advantage of the processor's functioning. Also, as we are doing line multiplication, the cache is used more efficiently, since the elements of the same line are accessed in a row, which reduces the number of cache misses. Below are snippets of the versions of this code both in C++ and Java:
 
     ```C++
-    void lineMultiplication(int **matrixA, int **matrixB, int **matrixC, int size) {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 for (int k = 0; k < size; k++) {
@@ -59,7 +58,6 @@ The problem presented on the project consists in the implementation of various v
                 }
             }
         }
-    }
     ```
     Snippet of the algorithm using C++
 
@@ -79,7 +77,6 @@ The problem presented on the project consists in the implementation of various v
     This version of the algorithm is an improvement of the previous one, in which the elements of the result matrix are calculated by dividing the matrix into blocks of smaller sizes, and multiplying the corresponding blocks of the first and second matrices. For each block, this is done by using the line multiplication algorithm, which means that an improvement in its performance is to be expected, taking into account the division of the matrices in blocks. Although the number of loops in the code increased, the performance is generally better, as we will see in further detail in the following sections. Below is a snippet of the version of this code in C++:  
 
     ```C++
-    void blockMultiplication(int **matrixA, int **matrixB, int **matrixC, int size, int blockSize) {
         for (int i = 0; i < size; i += blockSize) {
             for (int j = 0; j < size; j += blockSize) {
                 for (int k = 0; k < size; k += blockSize) {
@@ -93,7 +90,6 @@ The problem presented on the project consists in the implementation of various v
                 }
             }
         }
-    }
     ```
     Snippet of the algorithm using C++
 
