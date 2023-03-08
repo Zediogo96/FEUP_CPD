@@ -113,35 +113,35 @@ The metrics used to compare the different algorithms, using different languages 
 
 ![picture 1](images/4f005a4ee9aeb8cb9a470807d6852437ee9d05bc3ed057b2aec989f63929c21a.png)  
 
-*Fig.1 - Comparison between execution time for different sized matrices in C++ and Java, for the most basic algorithm*
+__*Fig.1 - Comparison between execution time for different sized matrices in C++ and Java, for the most basic algorithm*__
 
 As we can see in Fig.1, C/C++ will always be faster than Java by a large margin. This can be due to the fact that C/C++ is a compiled language, while Java is an interpreted language, which means that the code is translated into machine code at runtime, which is a much slower process. Also, the fact that C/C++ is a low-level language, which means that it is closer to the machine code, allows it to be more efficient than Java, which is a high-level language.
 However, in comparison with the other algorithms, we can see that the traditional algorithm is the slowest one, which is due to the fact that it is the most basic one, and it does not take into account the details of the processor's functioning and the structure of the memory hierarchy: the large amount of cache misses that occur in this algorithm are the main reason for its poor performance. 
 This happens mainly due to the fact that it needs to access values that are spaced far away from each other in the memory, when reading values from the columns of the second matrix. 
 Also, the higer the size of the matrices, the more cache misses occur, which leads to a significant increase in the execution time.
 
-![picture 2](images/f8dd1f91df7e0351c8f9bebcfa43c0b0c012952758dc53cafc4b8dcd792fcebd.png)  
+![picture 2](images/f8dd1f91df7e0351c8f9bebcfa43c0b0c012952758dc53cafc4b8dcd792fcebd.png)
 
-*Fig.2 - Comparison between execution time for different sized matrices in C++ and Java, for the line multiplication algorithm*
+__*Fig.2 - Comparison between execution time for different sized matrices in C++ and Java, for the line multiplication algorithm*__
 
 As we can see in Fig.2, the line multiplication algorithm is clearly faster than the traditional algorithm for both programming languages, which is due to the fact that the values of the second matrix are now accessed consecutively, leading to a significant reduction in the number of cache misses. 
 Taking this into account, we can conclude that the better usage of the cache is the main reason for the improvement in performance of this algorithm, compared to the traditional one, as more values present in it are used.
 
 ![picture 3](images/0f8a0786c08d7d2cf51f18eeda7d9d18e165025c695b69072ee8025cb5d9f844.png)  
 
-*Fig.3 - L1 (blue) and L2 (red) DCM per FLOP for the basic  and line multiplication algorithms*
+__*Fig.3 - L1 (blue) and L2 (red) DCM per FLOP for the basic  and line multiplication algorithms*__
 
 Based on Fig.3, we can conclude what was already expected: the number of cache misses per Floating Point Operation is significantly lower for the line multiplication algorithm (both for L1 and L2 cache levels), in comparison with the traditional one, which is due to the fact that the line multiplication algorithm uses the cache more efficiently, as it accesses values that are closer to each other in the memory.
 
 ![picture 4](images/9494c992bed3690fb641542075315ff363e1461b9b619e5fa6365c40575aab1a.png)  
 
-*Fig.4 - Performance, in GFLOP/s, for both algotirhms in both programming languages*
+__*Fig.4 - Performance, in GFLOP/s, for both algotirhms in both programming languages*__
 
 The measures in Fig.4 allowed us to compare performance of both algorithms in a more simple way. That being said, we can easily understand that the line multiplication algoritms in both programming languages beat the most basic algorithm by a large margin, having a greater value of GFLOP/s.
 
 ![picture 5](images/31cc51527dc106306a039f11a35f8cb98040a1228f601d85c5869c95cfa455fc.png) 
 
-*Fig.5 - Execution time of the block multiplication algorithm, for different block sizes* 
+__*Fig.5 - Execution time of the block multiplication algorithm, for different block sizes*__ 
 
 
 Based on the conclusions we made in the previous sections, we can expect that the block multiplication algorithm will be faster than the other two, as dividing the matrices into blocks of fixed, smaller sizes will allow for whole cache blocks to be referenced at a time. We cannot compare directly, due to the fact that the tests made for the block multiplication algorithm took into account much larger matrices, however, we can clearly infer that this algorithm would be faster than the other two for any matrix size.
@@ -149,14 +149,14 @@ By analyzing the graph, we can also see that the "sweet spot" for the block size
 
 ![picture 6](images/5c142d8b9eb90ec427fcbe0c848edb783f0b4f6311296259661e221db2743267.png)  
 
-*Fig.6 - L1 Data Cache Misses per FLOP for various block and matrix sizes, in comparison with the highest values obtained for the other algorithms in the previous steps* 
+__*Fig.6 - L1 Data Cache Misses per FLOP for various block and matrix sizes, in comparison with the highest values obtained for the other algorithms in the previous steps*__ 
 
 As we can see in Fig.6, the number of cache misses is greatly reduced once again, only increasing with the size of the blocks, which is to be expected: in the end, the memory and the cache are still limited resources, and the more values are stored in it, the more cache misses will occur.
 This chart is particularly intersting, as it shows that, even for matrix sizes that are far superior to the ones in which the basic and line multiplication algorithms were tested (green and yellow bars, respectively), the block multiplication algorithm always demonstrates an unmatched performance, with a very low value for DCM/FLOP, due to the fact that it acesses the memory and cache in a much more efficient way.
 
 ![picture 7](images/92b23025dc19c0a83d592a354e3e7e63a4e26de0321a29cce8b0998e23b203bf.png) 
 
-*Fig.7 - Performance in GFLOP/s for the various blcok sizes of the blcok multiplication algorithm*  
+__*Fig.7 - Performance in GFLOP/s for the various blcok sizes of the blcok multiplication algorithm*__  
 
 To conclude our analysis, we can observe in Fig.7 that the block multiplication algorithm is indeed very efficient for large matrices, particularly when the size 256 is used for the blocks.
 
