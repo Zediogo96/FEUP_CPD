@@ -137,7 +137,7 @@ Based on Fig.3, we can conclude what was already expected: the number of cache m
 
 __*Fig.4 - Performance, in GFLOP/s, for both algotirhms in both programming languages*__
 
-The measures in Fig.4 allowed us to compare performance of both algorithms in a simpler way. That being said, we can easily understand that the line multiplication algoritms in both programming languages beat the most basic algorithms by a large margin, having a greater value of GFLOP/s.
+The measures in Fig.4 allowed us to compare performance of both algorithms in a simpler way. That being said, we can easily understand that the line multiplication algorithms in both programming languages beat the most basic algorithms by a large margin, having a greater value of GFLOP/s.
 
 ![picture 5](images/31cc51527dc106306a039f11a35f8cb98040a1228f601d85c5869c95cfa455fc.png) 
 
