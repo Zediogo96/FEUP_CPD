@@ -48,7 +48,7 @@ The problem presented on the project consists in the implementation of various v
 
 2. **Line multiplication**
 
-    This version of the algorithm is an improvement of the previous one, in which the elements of the resulting matrix are calculated by using a techinque of row-by-row multiplication - elements in a row of the first matrix are multiplied by the corresponding element in each row of the second matrix and the result accumulated in the respective position of the resulting matrix. Doing so, each value of the final matrix is not computed at once, but the lines are gradually filled. It is important to note that this algorithm can be considered an improvement because it takes advantage of the processor's functioning. Also, as we are doing line multiplication, the cache is used more efficiently, since the elements of the same line are accessed in a row, which reduces the number of cache misses. Below are snippets of the versions of this code both in C++ and Java:
+    This version of the algorithm is an improvement of the previous one, in which the elements of the resulting matrix are calculated by using a technique of row-by-row multiplication - elements in a row of the first matrix are multiplied by the corresponding element in each row of the second matrix and the result accumulated in the respective position of the resulting matrix. Doing so, each value of the final matrix is not computed at once, but the lines are gradually filled. It is important to note that this algorithm can be considered an improvement because it takes advantage of the processor's functioning. Also, as we are doing line multiplication, the cache is used more efficiently, since the elements of the same line are accessed in a row, which reduces the number of cache misses. Below are snippets of the versions of this code both in C++ and Java:
 
     ```C++
         for (int i = 0; i < size; i++) {
@@ -116,7 +116,7 @@ The metrics used to compare the different algorithms, using different languages 
 __*Fig.1 - Comparison between execution time for different sized matrices in C++ and Java, for the most basic algorithm*__
 
 As we can see in Fig.1, C/C++ will always be faster than Java by a large margin. This can be due to the fact that C/C++ is a compiled language, while Java is an interpreted language, which means that the code is translated into machine code at runtime, which is a much slower process. Also, the fact that C/C++ is a low-level language, which means that it is closer to the machine code, allows it to be more efficient than Java, which is a high-level language.
-However, in comparison with the other algorithms, we can see that the traditional algorithm is the slowest one, which is due to the fact that it is the most basic one, and it does not take into account the details of the processor's functioning and the structure of the memory hierarchy: the large amount of cache misses that occur in this algorithm are the main reason for its poor performance. 
+However, in comparison with the other algorithms, the traditional algorithm is the slowest one, which is due to the fact that it is the most basic one, and it does not take into account the details of the processor's functioning and the structure of the memory hierarchy: the large amount of cache misses that occur in this algorithm are the main reason for its poor performance. 
 This happens mainly due to the fact that it needs to access values that are spaced far away from each other in the memory, when reading values from the columns of the second matrix. 
 Also, the higer the size of the matrices, the more cache misses occur, which leads to a significant increase in the execution time.
 
@@ -137,7 +137,7 @@ Based on Fig.3, we can conclude what was already expected: the number of cache m
 
 __*Fig.4 - Performance, in GFLOP/s, for both algotirhms in both programming languages*__
 
-The measures in Fig.4 allowed us to compare performance of both algorithms in a more simple way. That being said, we can easily understand that the line multiplication algoritms in both programming languages beat the most basic algorithm by a large margin, having a greater value of GFLOP/s.
+The measures in Fig.4 allowed us to compare performance of both algorithms in a simpler way. That being said, we can easily understand that the line multiplication algoritms in both programming languages beat the most basic algorithms by a large margin, having a greater value of GFLOP/s.
 
 ![picture 5](images/31cc51527dc106306a039f11a35f8cb98040a1228f601d85c5869c95cfa455fc.png) 
 
@@ -152,7 +152,7 @@ By analyzing the graph, we can also see that the "sweet spot" for the block size
 __*Fig.6 - L1 Data Cache Misses per FLOP for various block and matrix sizes, in comparison with the highest values obtained for the other algorithms in the previous steps*__ 
 
 As we can see in Fig.6, the number of cache misses is greatly reduced once again, only increasing with the size of the blocks, which is to be expected: in the end, the memory and the cache are still limited resources, and the more values are stored in it, the more cache misses will occur.
-This chart is particularly intersting, as it shows that, even for matrix sizes that are far superior to the ones in which the basic and line multiplication algorithms were tested (green and yellow bars, respectively), the block multiplication algorithm always demonstrates an unmatched performance, with a very low value for DCM/FLOP, due to the fact that it acesses the memory and cache in a much more efficient way.
+This chart is particularly intersting, as it shows that, even for matrix sizes that are far superior to the ones in which the basic and line multiplication algorithms were tested (green and yellow bars, respectively), the block multiplication algorithm always demonstrates an unmatched performance, with a very low value for DCM/FLOP, due to the fact that it accesses the memory and cache in a much more efficient way.
 
 ![picture 7](images/92b23025dc19c0a83d592a354e3e7e63a4e26de0321a29cce8b0998e23b203bf.png) 
 
