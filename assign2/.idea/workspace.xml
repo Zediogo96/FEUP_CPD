@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d215891a-fa80-4998-8a47-848457f6ad99" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../assign1/doc/.empty" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../assign1/src/matrixMult/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../assign1/src/matrixMult/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../assign1/src/matrixMult/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../assign1/src/matrixMult/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../assign1/src/matrixMult/matrixMult.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../assign1/src/matrixMult/out/production/matrixMult/Main.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../assign1/src/matrixMult/out/production/matrixMult/matrixProduct.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../assign1/src/matrixMult/src/Main.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../assign1/src/matrixMult/src/matrixProduct.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../assign1/src/tp1.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/Client.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/Server.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/Utils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/Game.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/TriviaGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Game/TriviaGame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/TriviaQuestion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Game/TriviaQuestion.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/Utils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Utils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/data/users.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/data/users.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/questions.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Game/questions.json" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="2OrtpVW8mnrHOgjHSzROQBwaq59" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "refactoring",
+    "last_opened_file_path": "/home/zediogo96/Documents/CPD/projetos/assign2",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "onboarding.tips.debug.path": "/home/zediogo96/Documents/CPD/projetos/assign2/src/Main.java",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="game" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/Game" />
+      <recent name="$PROJECT_DIR$/src" />
+      <recent name="$PROJECT_DIR$/src/main" />
+      <recent name="$PROJECT_DIR$/src/Game" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="Main" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="main.Main" />
+      <module name="assign2" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d215891a-fa80-4998-8a47-848457f6ad99" name="Changes" comment="" />
+      <created>1682330715507</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1682330715507</updated>
+      <workItem from="1682330716373" duration="3740000" />
+      <workItem from="1682498921444" duration="19000" />
+      <workItem from="1682514078076" duration="4279000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
