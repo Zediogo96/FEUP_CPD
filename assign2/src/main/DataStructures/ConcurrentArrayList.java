@@ -40,4 +40,21 @@ public class ConcurrentArrayList<T> {
     public int size() {
         return list.size();
     }
+
+    public void clear() {
+        lock.lock();
+        try {
+            list.clear();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void lock() {
+        lock.lock();
+    }
+
+    public void unlock() {
+        lock.unlock();
+    }
 }

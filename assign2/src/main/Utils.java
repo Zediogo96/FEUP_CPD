@@ -9,6 +9,8 @@ import java.util.List;
 public final class Utils {
 
     public static synchronized void sendMessage(SocketChannel socketChannel, String message) {
+
+        /*if (!socketChannel.isConnected()) return;*/
         try {
 
             message += "\n";

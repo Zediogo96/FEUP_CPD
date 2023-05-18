@@ -1,5 +1,6 @@
 package main.Game;
 
+import main.DataStructures.ConcurrentArrayList;
 import main.DataStructures.ConcurrentMap;
 import main.Player;
 import main.Utils;
@@ -17,21 +18,28 @@ import static main.Utils.sendMessage;
 
 public class TriviaGame implements Runnable {
     private static int NUM_ROUNDS = 2;
-    public boolean isGameOver = false;
     private final List<TriviaQuestion> questions;
     private final List<TriviaQuestion> gameQuestions;
-    private final List<Player> userSockets;
+    private final ConcurrentArrayList<Player> userSockets;
     private final ConcurrentMap<Player, Integer> scores;
+    private final String game_UUID;
+    public boolean isGameOver = false;
+    public int num_disconnects = 0;
+    public int TIMEOUT = 5000; // Timeout value in milliseconds
 
-    public TriviaGame(int number_of_rounds, List<Player> userSockets) throws IOException {
+    public ConcurrentMap<String, Integer> disconnected_players_score;
+
+    public TriviaGame(int number_of_rounds, ConcurrentArrayList<Player> userSockets, String uuid) throws IOException {
 
         this.questions = loadQuestions();
         this.gameQuestions = getRandomQuestions(NUM_ROUNDS);
         this.userSockets = userSockets;
         this.scores = new ConcurrentMap<>();
         NUM_ROUNDS = number_of_rounds;
+        this.game_UUID = uuid;
+        this.disconnected_players_score = new ConcurrentMap<>();
 
-        for (Player player : userSockets) {
+        for (Player player : userSockets.getList()) {
             scores.put(player, 0);
         }
     }
@@ -44,7 +52,7 @@ public class TriviaGame implements Runnable {
 
         ConcurrentMap<Socket, Integer> answers = new ConcurrentMap<>();
 
-        for (Player player : userSockets) {
+        for (Player player : userSockets.getList()) {
             sendMessage(player.getSocketChannel(), initMsg);
         }
 
@@ -54,20 +62,21 @@ public class TriviaGame implements Runnable {
 
             System.out.println("> Sending question nr. " + (i + 1) + " to all players");
 
-            for (Player player : userSockets) {
+            for (Player player : userSockets.getList()) {
                 sendQuestion(player.getSocketChannel(), question);
             }
 
             int numAnswersReceived = 0;
-            int timeout = 7000; // Timeout value in milliseconds
+
             long startTime = System.currentTimeMillis();
 
             while (numAnswersReceived < userSockets.size()) {
-                for (Player socket : userSockets) {
+                for (Player socket : userSockets.getList()) {
                     try {
                         if (socket.getSocketChannel().socket().getInputStream().available() > 0) {
                             String answer = Utils.receiveMessage(socket.getSocketChannel());
                             answer = answer.replace("\n", "");
+                            System.out.println("> Received answer: " + answer + " from " + socket.getUserName());
                             answers.put(socket.getSocketChannel().socket(), Integer.parseInt(answer));
                             numAnswersReceived++;
                         }
@@ -75,12 +84,12 @@ public class TriviaGame implements Runnable {
                         throw new RuntimeException(e);
                     }
                 }
-
                 // CHECK IF TIMEOUT HAS BEEN REACHED
                 long elapsedTime = System.currentTimeMillis() - startTime;
 
-                if (elapsedTime >= timeout) {
-                    for (Player player : userSockets) {
+                if (elapsedTime >= TIMEOUT) {
+                    System.out.println();
+                    for (Player player : userSockets.getList()) {
                         if (!answers.containsKey(player.getSocketChannel().socket())) {
                             sendMessage(player.getSocketChannel(), "You did not answer in time!");
                             answers.put(player.getSocketChannel().socket(), -1);
@@ -91,11 +100,15 @@ public class TriviaGame implements Runnable {
                 }
             }
 
-            for (Player player : userSockets) {
+            System.out.println("HERE");
+            for (Player player : userSockets.getList()) {
+                System.out.println("here 2");
                 if (Objects.equals(answers.get(player.getSocketChannel().socket()), question.getCorrectAnswerIndex())) {
+                    System.out.println("HERE 3");
                     scores.put(player, scores.get(player) + 1);
                     sendMessage(player.getSocketChannel(), "Your was correct!");
                 } else {
+                    System.out.println("here wrong");
                     sendMessage(player.getSocketChannel(), "Your answer was incorrect! The correct answer was: " + question.getCorrectAnswerIndex());
                 }
             }
@@ -105,7 +118,7 @@ public class TriviaGame implements Runnable {
                 scoresMsg.append("Player ").append(j + 1).append(": ").append(scores.get(userSockets.get(j))).append("\n");
             }
 
-            for (Player player : userSockets) {
+            for (Player player : userSockets.getList()) {
                 sendMessage(player.getSocketChannel(), scoresMsg.toString());
             }
 
@@ -114,7 +127,7 @@ public class TriviaGame implements Runnable {
 
         Player winner = getWinner();
 
-        for (Player player : userSockets) {
+        for (Player player : userSockets.getList()) {
 
             if (winner == null) sendMessage(player.getSocketChannel(), "It's a tie! Everyone wins!");
             else {
@@ -136,12 +149,12 @@ public class TriviaGame implements Runnable {
         String fullQuestion =
                 "********************************************************************\n\n" +
 
-                "Question: " + question.getQuestion() + ";;" +
-                "1: " + question.getAnswers().get(0) + ";" +
-                "2: " + question.getAnswers().get(1) + ";" +
-                "3: " + question.getAnswers().get(2) + ";" +
-                "4: " + question.getAnswers().get(3) + "\n\n" +
-                "********************************************************************";
+                        "Question: " + question.getQuestion() + ";;" +
+                        "1: " + question.getAnswers().get(0) + ";" +
+                        "2: " + question.getAnswers().get(1) + ";" +
+                        "3: " + question.getAnswers().get(2) + ";" +
+                        "4: " + question.getAnswers().get(3) + "\n\n" +
+                        "********************************************************************";
 
         Utils.sendMessage(socket, fullQuestion);
     }
@@ -190,7 +203,7 @@ public class TriviaGame implements Runnable {
 
     private int getAverageRank() {
         int sum = 0;
-        for (Player player : userSockets) sum += player.getRank();
+        for (Player player : userSockets.getList()) sum += player.getRank();
         return sum / userSockets.size();
     }
 
@@ -229,7 +242,7 @@ public class TriviaGame implements Runnable {
     }
 
     public List<Player> getUserSockets() {
-        return userSockets;
+        return userSockets.getList();
     }
 
     public List<TriviaQuestion> loadQuestions() throws IOException {
@@ -251,4 +264,34 @@ public class TriviaGame implements Runnable {
         }
         return questions;
     }
+
+    public String getGame_UUID() {
+        return game_UUID;
+    }
+
+    public void incrementNumDisconnected() {
+        num_disconnects++;
+    }
+
+    public void decrementNumDisconnected() {
+        num_disconnects--;
+    }
+
+    public void addPlayer(Player player) {
+        if (disconnected_players_score.containsKey(player.getToken())) {
+            scores.put(player, disconnected_players_score.get(player.getToken()));
+            disconnected_players_score.remove(player.getToken());
+        }
+        userSockets.add(player);
+    }
+
+    public void updateDisconnectedPlayer_Score_Table(Player player, int score) {
+        disconnected_players_score.put(player.getToken(), score);
+    }
+
+    public ConcurrentMap<Player, Integer> getScores() {
+        return scores;
+    }
+
+
 }

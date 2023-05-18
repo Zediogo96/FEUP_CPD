@@ -13,6 +13,10 @@ public class Player {
     boolean isDisconnected;
     public static final int DEFAULT_RANK_THRESHOLD = 5;
 
+    String currentgame_UUID;
+
+    Boolean isInGame = false;
+
     public Player(String userName, SocketChannel socket, String token, int rank) {
         this.userName = userName;
         this.socket = socket;
@@ -65,5 +69,26 @@ public class Player {
 
     public boolean isDisconnected() {
         return isDisconnected;
+    }
+
+    public String getCurrentGameUUID() {
+        return currentgame_UUID;
+    }
+
+    public void setCurrentGameUUID(String uuid) {
+        this.currentgame_UUID = uuid;
+    }
+
+    public void setIsInGame(Boolean isInGame) {
+        this.isInGame = isInGame;
+    }
+
+    public Boolean isInGame() {
+        return isInGame;
+    }
+
+    public void associateGameUUID_andInGame(String UUID) {
+        this.currentgame_UUID = UUID;
+        this.isInGame = true;
     }
 }

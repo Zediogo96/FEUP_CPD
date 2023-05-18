@@ -26,6 +26,8 @@ public class Server {
     public static int CURRENT_RANKING_DIFFERENCE_THRESHOLD = 50;
     private static List<Player> waitingPlayers;
 
+    // CONCURRENT LIST OF ACTIVE GAMES AND THEIR UNIQUE IDENTIFIER
+    static ConcurrentMap<TriviaGame, String> activeGames = new ConcurrentMap<>();
     /**
      * Map of players that have disconnected from the server, so they can be removed from the waiting list
      * but still be able to reconnect to it's position in the waiting queue
@@ -34,6 +36,13 @@ public class Server {
      * Value: Player's position in the waiting queue
      */
     public static ConcurrentMap<String, Integer> disconnectedPlayers = new ConcurrentMap<>();
+    /**
+     * Map of players that have disconnected from the game, so they can be reconnected to it
+     * ---
+     * Key: Player's Universal Token
+     * Value: Game's Unique Identifier
+     */
+    public static ConcurrentMap<String, String> disconnected_from_game = new ConcurrentMap<>();
 
     public static void main(String[] args) throws IOException {
 
@@ -77,8 +86,7 @@ public class Server {
 
         // LIST OF PLAYERS THAT ARE WAITING FOR A GAME
         waitingPlayers = new ArrayList<>();
-        // CONCURRENT LIST OF ACTIVE GAMES
-        ConcurrentArrayList<TriviaGame> activeGames = new ConcurrentArrayList<>();
+
         // THREAD POOL FOR ACTIVE GAMES, WITH A MAXIMUM OF **MAX_GAMES** THREADS
         ExecutorService threadPool = Executors.newFixedThreadPool(MAX_GAMES);
         // CHECK IF SERVER IS IN RANKED MODE, DEFAULT IS UNRANKED
@@ -106,33 +114,45 @@ public class Server {
             System.out.println("Active games: " + activeGames.size());
             System.out.println("--------------------------------------------\n");
 
+            /* print all waiting players */
+            System.out.println("Waiting players:");
+            for (int i = 0; i < waitingPlayers.size(); i++) {
+                System.out.println("[" + i + "] " + waitingPlayers.get(i).getUserName());
+            }
+
             if (activeGames.size() < MAX_GAMES) {
 
                 if (isRankedMode) {
 
-                    List<Player> players;
+                    ConcurrentArrayList<Player> players;
 
                     if ((players = (matchmakingAlgorithm(waitingPlayers))) != null) {
-                        TriviaGame game = new TriviaGame(NUMBER_OF_ROUNDS, players);
-                        activeGames.add(game);
+                        String uuid = UUID.randomUUID().toString();
+                        TriviaGame game = new TriviaGame(NUMBER_OF_ROUNDS, players, uuid);
+                        /* set every player inGame */
+                        players.getList().forEach(player -> player.associateGameUUID_andInGame(uuid));
+                        activeGames.put(game, uuid);
                         threadPool.execute(game);
                     }
                 }
                 else {
                     if (waitingPlayers.size() >= PLAYERS_PER_GAME) {
-                        List<Player> players = new ArrayList<>();
+                        ConcurrentArrayList<Player> players = new ConcurrentArrayList<>();
                         for (int i = 0; i < PLAYERS_PER_GAME; i++) {
                             players.add(waitingPlayers.remove(0));
+                            players.getList().get(i).setIsInGame(true);
                         }
-                        TriviaGame game = new TriviaGame(NUMBER_OF_ROUNDS, players);
-                        activeGames.add(game);
+
+                        String uuid = UUID.randomUUID().toString();
+                        TriviaGame game = new TriviaGame(NUMBER_OF_ROUNDS, players, uuid);
+                        activeGames.put(game, uuid);
                         threadPool.execute(game);
                     }
                 }
             }
 
             // HANDLE GAMES THAT ARE ALREADY OVER
-            Iterator<TriviaGame> gameIterator = activeGames.getList().iterator();
+            Iterator<TriviaGame> gameIterator = activeGames.keySet().iterator();
             while (gameIterator.hasNext()) {
                 TriviaGame game = gameIterator.next();
                 if (game.isGameOver()) {
@@ -140,6 +160,7 @@ public class Server {
                         lock.lock();
                         try {
                             waitingPlayers.add(player);
+                            player.setIsInGame(false);
                             Utils.sendMessage(player.getSocketChannel(), "Game over! You have been added to the waiting list.");
                         } finally {
                             lock.unlock();
@@ -204,18 +225,32 @@ public class Server {
 
         System.out.println("Client disconnected: " + clientSocketChannel.getRemoteAddress());
         bufferMap.remove(clientSocketChannel);
-        // FIND THE PLAYER ON THE WAITING LIST BASED ON ITS CLIENT SOCKET CHANNEL
-        Player player = waitingPlayers.stream().filter(p -> p.getSocketChannel().equals(clientSocketChannel)).findFirst().orElse(null);
-        // FIND INDEX OF PLAYER ON THE WAITING LIST
-        int index = waitingPlayers.indexOf(player);
 
-        // REMOVE PLAYER FROM THE WAITING LIST
-        waitingPlayers.remove(player);
-        assert player != null;
+        Player player = findPlayerByChannel(clientSocketChannel);
 
-        // SAVE ITS TOKEN ON THE DISCONNECTED PLAYERS MAP, AS WELL AS ITS CURRENT INDEX
-        disconnectedPlayers.put(player.getToken(), index);
-
+        if (player.isInGame()) {
+            String current_game_uuid = player.getCurrentGameUUID();
+            disconnected_from_game.put(player.token, current_game_uuid);
+            TriviaGame game = null;
+            for (TriviaGame k : activeGames.keySet()) {
+                if (k.getGame_UUID().equals(current_game_uuid)) {
+                    game = k;
+                    break;
+                }
+            }
+            assert game != null;
+            game.updateDisconnectedPlayer_Score_Table(player, game.getScores().get(player));
+            game.getUserSockets().remove(player);
+//            game.incrementNumDisconnected();
+        }
+        else {
+            // FIND THE INDEX OF THE PLAYER IN THE WAITING LIST
+            int index = waitingPlayers.indexOf(player);
+            // REMOVE PLAYER FROM THE WAITING LIST
+            waitingPlayers.remove(player);
+            // SAVE ITS TOKEN ON THE DISCONNECTED PLAYERS MAP, AS WELL AS ITS CURRENT INDEX
+            disconnectedPlayers.put(player.getToken(), index);
+        }
         // CLOSE THE SOCKET CHANNEL AND CANCEL THE KEY
         clientSocketChannel.close();
         key.cancel();
@@ -240,7 +275,19 @@ public class Server {
                         Player player = new Player(username, socket, parts[3], Integer.parseInt(parts[2]));
 
                         // IF THE PLAYER IS ON THE DISCONNECTED PLAYERS MAP, RESTORE IT TO ITS ORIGINAL POSITION
-                        if (disconnectedPlayers.containsKey(player.getToken())) {
+
+                        if (disconnected_from_game.containsKey(player.getToken())) {
+                            String uuid = disconnected_from_game.get(player.getToken());
+                            TriviaGame game = activeGames.keySet().stream().filter(g -> g.getGame_UUID().equals(uuid)).findFirst().orElse(null);
+                            if (game != null) {
+                                game.addPlayer(player);
+                                disconnected_from_game.remove(player.getToken());
+                                /*game.decrementNumDisconnected();*/
+                                Utils.sendMessage(socket, "\nYou have been reconnected to your previous game.");
+                                break;
+                            }
+                        }
+                        else if (disconnectedPlayers.containsKey(player.getToken())) {
                             int index = disconnectedPlayers.get(player.getToken());
 
                             // IF THE INDEX IS OUT OF BOUNDS, ADD IT TO THE END OF THE LIST
@@ -311,10 +358,10 @@ public class Server {
         }
     }
 
-    public static List<Player> matchmakingAlgorithm(List<Player> waitingPlayers) {
+    public static ConcurrentArrayList<Player> matchmakingAlgorithm(List<Player> waitingPlayers) {
 
         // TEMPORARY DATA STRUCTURE TO SUPPORT MATCHMAKING
-        List<Player> players = new ArrayList<>();
+        ConcurrentArrayList<Player> players = new ConcurrentArrayList<>();
         long now = System.currentTimeMillis();
 
         /* create games according to player.getRank() and the maximum number of players per game */
@@ -343,7 +390,7 @@ public class Server {
                     if (players.size() == PLAYERS_PER_GAME) {
 
                         // REMOVE PLAYERS FROM THE WAITING LIST AND SET THEIR RELATED DEFAULT VALUES
-                        for (Player player : players) {
+                        for (Player player : players.getList()) {
                             waitingPlayers.remove(player);
                             player.setLastQueuedTime(now);
                             player.setDefaultRankRange();
@@ -358,5 +405,18 @@ public class Server {
 
         // THERE WERE ARE NOT ENOUGH PLAYERS TO CREATE A GAME
         return null;
+    }
+
+    public static Player findPlayerByChannel(SocketChannel channel) {
+        Player player = waitingPlayers.stream().filter(p -> p.getSocketChannel().equals(channel)).findFirst().orElse(null);
+        if (player == null) {
+            for (TriviaGame game : activeGames.keySet()) {
+                player = game.getUserSockets().stream().filter(p -> p.getSocketChannel().equals(channel)).findFirst().orElse(null);
+                if (player != null) {
+                    return player;
+                }
+            }
+        }
+        return player;
     }
 }

@@ -53,8 +53,8 @@ while getopts ":drtu" opt; do
         # Open 2 new terminals and run Client
         gnome-terminal -- bash -c "javac main/Client.java && java main/Client login zeDiogo apple1; exec bash"
         gnome-terminal -- bash -c "javac main/Client.java && java main/Client login eduSilva apple2; exec bash"
-        gnome-terminal -- bash -c "javac main/Client.java && java main/Client login afonsoFarroco apple3; exec bash"
-        gnome-terminal -- bash -c "javac main/Client.java && java main/Client login suzanaDiogo apple4; exec bash"
+#        gnome-terminal -- bash -c "javac main/Client.java && java main/Client login afonsoFarroco apple3; exec bash"
+#        gnome-terminal -- bash -c "javac main/Client.java && java main/Client login suzanaDiogo apple4; exec bash"
 
         wait
       ;;

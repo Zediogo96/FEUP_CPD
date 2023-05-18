@@ -1,5 +1,7 @@
 package main;
 
+import main.Game.TriviaGame;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,8 +13,10 @@ import java.nio.channels.SocketChannel;
 
 import static java.lang.System.exit;
 
+
 public class Client {
     private static final int PORT = 1234;
+    public static int TIMEOUT = 5000;
 
     public static void main(String[] args) throws IOException {
         SocketChannel socketChannel = SocketChannel.open();
@@ -58,7 +62,18 @@ public class Client {
                         System.out.println("\nEnter your answer: ");
                         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
+                        // CURRENT TIME
+                        long startTime = System.currentTimeMillis();
+
+
+
                         while (true) {
+
+                            if (System.currentTimeMillis() - startTime > TIMEOUT) {
+                                System.out.println("Time is up!");
+                                Utils.sendMessage(socketChannel, "0");
+                                break;
+                            }
                             Integer answer = Integer.parseInt(reader.readLine());
                             if (answer >= 1 && answer <= 4) {
                                 Utils.sendMessage(socketChannel, String.valueOf(answer));
