@@ -1,7 +1,5 @@
 package main;
 
-import main.Game.TriviaGame;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,7 +14,10 @@ import static java.lang.System.exit;
 
 public class Client {
     private static final int PORT = 1234;
-    public static int TIMEOUT = 5000;
+    public static int TIMEOUT = 25000;
+
+    static boolean waitingForAnswer = false;
+    static long startTime = 0;
 
     public static void main(String[] args) throws IOException {
         SocketChannel socketChannel = SocketChannel.open();
@@ -29,7 +30,6 @@ public class Client {
         ByteBuffer buffer = ByteBuffer.allocate(1024);
         while (true) {
             selector.select();
-
             for (SelectionKey key : selector.selectedKeys()) {
                 if (key.isConnectable()) {
                     if (socketChannel.finishConnect()) {
@@ -60,26 +60,32 @@ public class Client {
                     if (serverMsg.contains("Question:")) {
                         System.out.println("\n" + serverMsg.replace(";", "\n"));
                         System.out.println("\nEnter your answer: ");
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-                        // CURRENT TIME
-                        long startTime = System.currentTimeMillis();
+                        BufferedReader reader = null;
+                        if (!waitingForAnswer) {
+                            reader = new BufferedReader(new InputStreamReader(System.in));
+                            startTime = System.currentTimeMillis();
+                            waitingForAnswer = true;
+                        }
 
+                        // Check for timeout
+                        long elapsedTime = System.currentTimeMillis() - startTime;
+                        if (elapsedTime >= TIMEOUT) {
+                            Utils.sendMessage(socketChannel, "0");
+                            waitingForAnswer = false;
+                            break;
+                        }
 
-
-                        while (true) {
-
-                            if (System.currentTimeMillis() - startTime > TIMEOUT) {
-                                System.out.println("Time is up!");
-                                Utils.sendMessage(socketChannel, "0");
-                                break;
-                            }
-                            Integer answer = Integer.parseInt(reader.readLine());
-                            if (answer >= 1 && answer <= 4) {
-                                Utils.sendMessage(socketChannel, String.valueOf(answer));
-                                break;
-                            } else {
-                                System.out.println("Invalid answer. Please enter a number between 1 and 4.");
+                        if (waitingForAnswer && reader != null) {
+                            if (reader.ready()) {
+                                Integer answer = Integer.parseInt(reader.readLine());
+                                if (answer >= 1 && answer <= 4) {
+                                    Utils.sendMessage(socketChannel, String.valueOf(answer));
+                                    waitingForAnswer = false;
+                                    break;
+                                } else {
+                                    System.out.println("Invalid answer. Please enter a number between 1 and 4.");
+                                }
                             }
                         }
 
@@ -93,8 +99,7 @@ public class Client {
                             System.out.println("\n> Server: " + serverMsg);
                         }
                         System.exit(0);
-                    }
-                    else {
+                    } else {
                         System.out.println("\n> Server: " + serverMsg);
                     }
                 }
