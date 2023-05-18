@@ -24,21 +24,6 @@ public final class Utils {
         }
     }
 
-
-    public static synchronized void sendMessageToMultipleSockets(List<SocketChannel> sockets, String message) {
-        ByteBuffer buffer = ByteBuffer.wrap(message.getBytes());
-
-        try {
-            for (SocketChannel socket : sockets) {
-                socket.write(buffer);
-                buffer.rewind();
-                buffer.clear(); // Clear buffer for next message
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static synchronized String receiveMessage(SocketChannel socket) {
         String message = null;
         try {
@@ -56,6 +41,20 @@ public final class Utils {
         }
         return message;
     }
+    
+    private static String serializeMessage(Message message) {
+        // Serialize the message object to a string representation
+        // Example: "type:question;content:What is your name?"
+        return "type:" + message.getType() + "//content:" + message.getContent();
+    }
 
-
+    private static Message deserializeMessage(String message) {
+        // Deserialize the string representation to a message object
+        // Example: "type:question;content:What is your name?"
+        //          -> Message("question", "What is your name?")
+        String[] split = message.split("//");
+        String type = split[0].split(":")[1];
+        String content = split[1].split(":")[1];
+        return new Message(type, content);
+    }
 }
