@@ -15,19 +15,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static main.Utils.sendMessage;
-import static main.Utils.TIMEOUT;
 
 public class TriviaGame implements Runnable {
+    public static final int TIMEOUT = 25000;
     private static int NUM_ROUNDS = 2;
+
+    private static int numPlayers = 0;
     private final List<TriviaQuestion> questions;
     private final List<TriviaQuestion> gameQuestions;
     private final ConcurrentArrayList<Player> userSockets;
     private final ConcurrentMap<Player, Integer> scores;
     private final String game_UUID;
     public boolean isGameOver = false;
-    public int num_disconnects = 0;
-
     public ConcurrentMap<String, Integer> disconnected_players_score;
+
+    long startTime;
+
+    public int CURRENT_GAME_ROUND = 0;
 
     public TriviaGame(int number_of_rounds, ConcurrentArrayList<Player> userSockets, String uuid) throws IOException {
 
@@ -38,6 +42,7 @@ public class TriviaGame implements Runnable {
         NUM_ROUNDS = number_of_rounds;
         this.game_UUID = uuid;
         this.disconnected_players_score = new ConcurrentMap<>();
+        numPlayers = userSockets.size();
 
         for (Player player : userSockets.getList()) {
             scores.put(player, 0);
@@ -56,33 +61,38 @@ public class TriviaGame implements Runnable {
 
         for (int i = 0; i < NUM_ROUNDS; i++) {
 
+            CURRENT_GAME_ROUND = i;
+
             TriviaQuestion question = gameQuestions.get(i);
 
             System.out.println("> Sending question nr. " + (i + 1) + " to all players in game " + this.getGame_UUID());
+
+            startTime = System.currentTimeMillis();
 
             for (Player player : userSockets.getList()) sendQuestion(player.getSocketChannel(), question);
 
             int numAnswersReceived = 0;
 
-            long startTime = System.currentTimeMillis();
 
-            while (numAnswersReceived < userSockets.size()) {
-                synchronized (userSockets) {
-                    for (Player socket : userSockets.getList()) {
 
-                        try {
-                            if (socket.getSocketChannel().socket().getInputStream().available() > 0 && !answers.containsKey(socket.getSocketChannel().socket()) && !socket.getSocketChannel().socket().isClosed()) {
-                                String answer = Utils.receiveMessage(socket.getSocketChannel());
-                                answer = answer.replace("\n", "");
-                                System.out.println("> Received answer: " + answer + " from " + socket.getUserName() + " in game " + this.getGame_UUID());
-                                answers.put(socket.getSocketChannel().socket(), Integer.parseInt(answer));
-                                numAnswersReceived++;
-                            }
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
+            while ((numAnswersReceived - disconnected_players_score.size()) < numPlayers) {
+                userSockets.lock();
+                for (Player socket : userSockets.getList()) {
+
+                    try {
+                        if (socket.getSocketChannel().socket().getInputStream().available() > 0 && !answers.containsKey(socket.getSocketChannel().socket()) && !socket.getSocketChannel().socket().isClosed()) {
+                            String answer = Utils.receiveMessage(socket.getSocketChannel());
+                            answer = answer.replace("\n", "");
+
+                            System.out.println("> Received answer: " + answer + " from " + socket.getUserName() + " in game " + this.getGame_UUID());
+                            answers.put(socket.getSocketChannel().socket(), Integer.parseInt(answer));
+                            numAnswersReceived++;
                         }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
                 }
+                userSockets.unlock();
                 // CHECK IF TIMEOUT HAS BEEN REACHED
                 long elapsedTime = System.currentTimeMillis() - startTime;
 
@@ -140,14 +150,18 @@ public class TriviaGame implements Runnable {
 
     private void sendQuestion(SocketChannel socket, TriviaQuestion question) {
 
+        long time_left = TIMEOUT - (System.currentTimeMillis() - startTime);
+        System.out.println("> Time left: " + time_left);
+
         String fullQuestion =
-                "********************************************************************\n\n" +
-                "Question: " + question.getQuestion() + ";;"
+                "********************************************************************\n\n"
+                + "Question: " + question.getQuestion() + ";;"
                 + "1: " + question.getAnswers().get(0) + ";"
                 + "2: " + question.getAnswers().get(1) + ";"
                 + "3: " + question.getAnswers().get(2) + ";"
                 + "4: " + question.getAnswers().get(3) + "\n\n"
-                + "********************************************************************";
+                + "********************************************************************"
+                + "//" + time_left;
 
         Utils.sendMessage(socket, fullQuestion);
     }
@@ -266,9 +280,11 @@ public class TriviaGame implements Runnable {
         if (disconnected_players_score.containsKey(player.getToken())) {
             scores.put(player, disconnected_players_score.get(player.getToken()));
             disconnected_players_score.remove(player.getToken());
+            sendQuestion(player.getSocketChannel(), gameQuestions.get(CURRENT_GAME_ROUND));
         }
         userSockets.add(player);
     }
+
     public void removePlayer(Player player) {
         userSockets.remove(player);
     }
@@ -276,7 +292,6 @@ public class TriviaGame implements Runnable {
     public void updateDisconnectedPlayer_Score_Table(Player player, int score) {
         disconnected_players_score.put(player.getToken(), score);
     }
-
 
     public ConcurrentMap<Player, Integer> getScores() {
         return scores;

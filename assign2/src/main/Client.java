@@ -8,14 +8,13 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.Arrays;
 
 import static java.lang.System.exit;
-import static main.Utils.TIMEOUT;
-
 
 public class Client {
+    public static long TIMEOUT = 0;
     private static final int PORT = 1234;
-
     static boolean waitingForAnswer = false;
     static long startTime = 0;
 
@@ -58,38 +57,42 @@ public class Client {
                     }
 
                     if (serverMsg.contains("Question:")) {
-                        System.out.println("\n" + serverMsg.replace(";", "\n"));
+
+                        String[] split = serverMsg.split("//");
+
+                        String question = split[0];
+                        String time = split[1].replace("\n", "");
+
+                        TIMEOUT = Long.parseLong(time);
+
+                        System.out.println("\n" + question.replace(";", "\n"));
                         System.out.println("\nEnter your answer: ");
 
-
                         BufferedReader reader = null;
-                        if (!waitingForAnswer) {
-                            reader = new BufferedReader(new InputStreamReader(System.in));
-                            startTime = System.currentTimeMillis();
-                            waitingForAnswer = true;
-                        }
 
-                        // Check for timeout
-                        long elapsedTime = System.currentTimeMillis() - startTime;
-                        if (elapsedTime >= TIMEOUT) {
+                        reader = new BufferedReader(new InputStreamReader(System.in));
+                        startTime = System.currentTimeMillis();
+
+                        boolean validAnswer = false;
+                        while (!validAnswer && System.currentTimeMillis() - startTime <= TIMEOUT) {
+                            try {
+                                if (reader.ready()) {
+                                    Integer answer = Integer.parseInt(reader.readLine());
+                                    if (answer >= 1 && answer <= 4) {
+                                        Utils.sendMessage(socketChannel, String.valueOf(answer));
+                                        waitingForAnswer = false;
+                                        validAnswer = true;
+                                    }
+                                }
+                            } catch (NumberFormatException e) {
+                                System.out.println("Invalid input. Please enter a number between 1 and 4.");
+                            }
+                        }
+                        if (!validAnswer) {
                             Utils.sendMessage(socketChannel, "0");
                             waitingForAnswer = false;
-                            break;
                         }
 
-                        if (waitingForAnswer && reader != null) {
-                            while(true) {
-                                Integer answer = Integer.parseInt(reader.readLine());
-                                if (answer >= 1 && answer <= 4) {
-                                    Utils.sendMessage(socketChannel, String.valueOf(answer));
-                                    waitingForAnswer = false;
-                                    break;
-                                } else {
-                                    System.out.println("Invalid answer. Please enter a number between 1 and 4.");
-                                }
-                            }
-
-                        }
 
                     } else if (serverMsg.contains("Scores:")) {
                         System.out.println("\n" + serverMsg.replace(";", "\n"));

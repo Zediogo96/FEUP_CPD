@@ -274,21 +274,18 @@ public class Server {
                         Player player = new Player(username, socket, parts[3], Integer.parseInt(parts[2]));
 
                         // IF THE PLAYER IS ON THE DISCONNECTED PLAYERS MAP, RESTORE IT TO ITS ORIGINAL POSITION
-
                         if (disconnected_from_game.containsKey(player.getToken())) {
                             String uuid = disconnected_from_game.get(player.getToken());
                             TriviaGame game = activeGames.keySet().stream().filter(g -> g.getGame_UUID().equals(uuid)).findFirst().orElse(null);
                             if (game != null) {
+                                Utils.sendMessage(socket, "\nYou have been reconnected to your previous game.\n");
                                 game.addPlayer(player);
                                 disconnected_from_game.remove(player.getToken());
-                                /*game.decrementNumDisconnected();*/
-                                Utils.sendMessage(socket, "\nYou have been reconnected to your previous game.");
                                 break;
                             }
                         }
                         else if (disconnectedPlayers.containsKey(player.getToken())) {
                             int index = disconnectedPlayers.get(player.getToken());
-
                             // IF THE INDEX IS OUT OF BOUNDS, ADD IT TO THE END OF THE LIST
                             try {
                                 waitingPlayers.add(index, player);

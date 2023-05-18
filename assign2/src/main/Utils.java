@@ -7,10 +7,7 @@ import java.util.List;
 
 public final class Utils {
 
-    public static final int TIMEOUT = 25000;
-
     public static synchronized void sendMessage(SocketChannel socketChannel, String message) {
-
 
         try {
 
