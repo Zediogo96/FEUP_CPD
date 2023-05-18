@@ -240,8 +240,7 @@ public class Server {
             }
             assert game != null;
             game.updateDisconnectedPlayer_Score_Table(player, game.getScores().get(player));
-            game.getUserSockets().remove(player);
-//            game.incrementNumDisconnected();
+            game.removePlayer(player);
         }
         else {
             // FIND THE INDEX OF THE PLAYER IN THE WAITING LIST

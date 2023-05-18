@@ -10,11 +10,11 @@ import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 
 import static java.lang.System.exit;
+import static main.Utils.TIMEOUT;
 
 
 public class Client {
     private static final int PORT = 1234;
-    public static int TIMEOUT = 25000;
 
     static boolean waitingForAnswer = false;
     static long startTime = 0;
@@ -61,6 +61,7 @@ public class Client {
                         System.out.println("\n" + serverMsg.replace(";", "\n"));
                         System.out.println("\nEnter your answer: ");
 
+
                         BufferedReader reader = null;
                         if (!waitingForAnswer) {
                             reader = new BufferedReader(new InputStreamReader(System.in));
@@ -77,7 +78,7 @@ public class Client {
                         }
 
                         if (waitingForAnswer && reader != null) {
-                            if (reader.ready()) {
+                            while(true) {
                                 Integer answer = Integer.parseInt(reader.readLine());
                                 if (answer >= 1 && answer <= 4) {
                                     Utils.sendMessage(socketChannel, String.valueOf(answer));
@@ -87,6 +88,7 @@ public class Client {
                                     System.out.println("Invalid answer. Please enter a number between 1 and 4.");
                                 }
                             }
+
                         }
 
                     } else if (serverMsg.contains("Scores:")) {

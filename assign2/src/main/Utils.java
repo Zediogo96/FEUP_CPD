@@ -3,10 +3,11 @@ package main;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.Arrays;
 import java.util.List;
 
 public final class Utils {
+
+    public static final int TIMEOUT = 25000;
 
     public static synchronized void sendMessage(SocketChannel socketChannel, String message) {
 
