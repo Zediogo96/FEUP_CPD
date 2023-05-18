@@ -296,4 +296,8 @@ public class TriviaGame implements Runnable {
     public ConcurrentMap<Player, Integer> getScores() {
         return scores;
     }
+
+    public boolean roomEmpty() {
+        return numPlayers - disconnected_players_score.size() == 0;
+    }
 }

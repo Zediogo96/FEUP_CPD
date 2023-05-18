@@ -168,6 +168,10 @@ public class Server {
                     }
                     gameIterator.remove();
                 }
+                else if (game.roomEmpty()) {
+                    System.out.println("Removed empty game room with UUID: " + activeGames.get(game));
+                    gameIterator.remove();
+                }
             }
 
             int readyChannels = selector.select(TIMEOUT);
