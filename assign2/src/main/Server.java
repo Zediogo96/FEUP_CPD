@@ -109,7 +109,7 @@ public class Server {
         // REGISTER SERVER SOCKET CHANNEL TO ACCEPT CONNECTIONS
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
-        System.out.println("Server started on port " + PORT + " in " + (isRankedMode ? "ranked" : "unranked") + " mode");
+        System.out.println(">> Server started on port " + PORT + " in " + (isRankedMode ? "ranked" : "unranked") + " mode");
 
         Map<SocketChannel, ByteBuffer> bufferMap = new HashMap<>();
 
@@ -125,7 +125,7 @@ public class Server {
             }
         };
 
-        executor.scheduleAtFixedRate(task, 0, 5, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(task, 0, 10, TimeUnit.SECONDS);
 
         while (true) {
 
@@ -164,6 +164,7 @@ public class Server {
             while (gameIterator.hasNext()) {
                 TriviaGame game = gameIterator.next();
                 if (game.isGameOver()) {
+                    System.out.println("Removed game room with UUID: " + activeGames.get(game) + " because it is over");
                     for (Player player : game.getUserSockets()) {
                         lock.lock();
                         try {
@@ -176,7 +177,7 @@ public class Server {
                     }
                     gameIterator.remove();
                 } else if (game.roomEmpty()) {
-                    System.out.println("Removed empty game room with UUID: " + activeGames.get(game));
+                    System.out.println("Removed game room with UUID: " + activeGames.get(game) + " because it is empty");
                     gameIterator.remove();
                 }
             }
@@ -196,7 +197,7 @@ public class Server {
                     clientSocketChannel.configureBlocking(false);
                     clientSocketChannel.register(selector, SelectionKey.OP_READ);
                     bufferMap.put(clientSocketChannel, ByteBuffer.allocate(BUFFER_SIZE));
-                    System.out.println("Client connected: " + clientSocketChannel.getRemoteAddress());
+                    System.out.println("> Client connected: " + clientSocketChannel.getRemoteAddress());
 
                 } else if (key.isReadable()) {
 
@@ -235,7 +236,7 @@ public class Server {
 
     private static void handleDisconnect(SocketChannel clientSocketChannel, Map<SocketChannel, ByteBuffer> bufferMap, SelectionKey key) throws IOException {
 
-        System.out.println("Client disconnected: " + clientSocketChannel.getRemoteAddress());
+        System.out.println("> Client disconnected: " + clientSocketChannel.getRemoteAddress());
         bufferMap.remove(clientSocketChannel);
 
         Player player = findPlayerByChannel(clientSocketChannel);
@@ -281,8 +282,8 @@ public class Server {
                     // CHECK IF THE PASSWORD MATCHES
                     if (parts[1].equals(password)) {
 
-                        System.out.println("Authentication Successful for username: " + username);
-                        Utils.sendMessage(socket, "Authentication Successful for username: " + username);
+                        System.out.println("> Authentication Successful for username: " + username);
+                        Utils.sendMessage(socket, "> Authentication Successful for username: " + username);
                         Player player = new Player(username, socket, parts[3], Integer.parseInt(parts[2]));
 
                         // IF THE PLAYER IS ON THE DISCONNECTED PLAYERS MAP, RESTORE IT TO ITS ORIGINAL POSITION
@@ -315,13 +316,13 @@ public class Server {
                         Utils.sendMessage(socket, "\nYou have been added to the waiting list, please wait...");
                         break;
                     } else {
-                        System.out.println("Authentication Failed for username: " + username);
-                        Utils.sendMessage(socket, "Authentication Failed for username: " + username + ". Incorrect password.");
+                        System.out.println("> Authentication Failed for username: " + username);
+                        Utils.sendMessage(socket, "> Authentication Failed for username: " + username + ". Incorrect password.");
                     }
                 }
 
-                System.out.println("Authentication Failed for username: " + username);
-                Utils.sendMessage(socket, "Authentication failed for username: " + username + ". Username does not exist. --(kill)\n");
+                System.out.println("> Authentication Failed for username: " + username);
+                Utils.sendMessage(socket, "> Authentication failed for username: " + username + ". Username does not exist. --(kill)\n");
                 socket.close();
                 return;
             }

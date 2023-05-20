@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public final class Utils {
 
     public static synchronized void sendMessage(SocketChannel socketChannel, String message) {
+
+        Utils.wait_msg(50);
 
         try {
 
@@ -56,5 +59,13 @@ public final class Utils {
         String type = split[0].split(":")[1];
         String content = split[1].split(":")[1];
         return new Message(type, content);
+    }
+
+    public static synchronized void wait_msg(long timeout) {
+        try {
+            TimeUnit.MILLISECONDS.sleep(timeout); // Adjust the delay as needed (500 milliseconds in this example)
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

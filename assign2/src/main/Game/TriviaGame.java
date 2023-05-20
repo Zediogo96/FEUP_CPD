@@ -1,5 +1,6 @@
 package main.Game;
 
+import jdk.jshell.execution.Util;
 import main.DataStructures.ConcurrentArrayList;
 import main.DataStructures.ConcurrentMap;
 import main.Player;
@@ -17,7 +18,7 @@ import java.util.regex.Pattern;
 import static main.Utils.sendMessage;
 
 public class TriviaGame implements Runnable {
-    public static final int TIMEOUT = 25000;
+    public static final int TIMEOUT = 1000;
     private static int NUM_ROUNDS = 2;
     private static int numPlayers = 0;
     private final List<TriviaQuestion> questions;
@@ -28,7 +29,6 @@ public class TriviaGame implements Runnable {
     public boolean isGameOver = false;
     public ConcurrentMap<String, Integer> disconnected_players_score;
     long startTime;
-
     public int CURRENT_GAME_ROUND = 0;
 
     public TriviaGame(int number_of_rounds, ConcurrentArrayList<Player> userSockets, String uuid) throws IOException {
@@ -78,7 +78,7 @@ public class TriviaGame implements Runnable {
                     try {
                         if (socket.getSocketChannel().socket().getInputStream().available() > 0 && !answers.containsKey(socket.getSocketChannel().socket()) && !socket.getSocketChannel().socket().isClosed()) {
                             String answer = Utils.receiveMessage(socket.getSocketChannel());
-                            if (Objects.equals(answer, "")) answer = "0\n";
+                            if (Objects.equals(answer, "") || answer == null) answer = "0\n";
 
                             answer = answer.replace("\n", "");
 
@@ -94,7 +94,7 @@ public class TriviaGame implements Runnable {
                 // CHECK IF TIMEOUT HAS BEEN REACHED
                 long elapsedTime = System.currentTimeMillis() - startTime;
 
-                if (elapsedTime >= TIMEOUT + 100) {
+                if (elapsedTime >= TIMEOUT) {
 
                     for (Player player : userSockets.getList()) {
 
@@ -102,6 +102,7 @@ public class TriviaGame implements Runnable {
                             sendMessage(player.getSocketChannel(), "You did not answer in time!");
                         }
                     }
+//                    Utils.wait_msg(50);
                     System.out.println("> Timeout reached, moving on to next question");
                     break;
                 }
@@ -115,6 +116,8 @@ public class TriviaGame implements Runnable {
                 }
             }
 
+//            Utils.wait_msg(50);
+
             StringBuilder scoresMsg = new StringBuilder("Scores:\n");
             for (int j = 0; j < userSockets.size(); j++) {
                 scoresMsg.append("Player ").append(j + 1).append(": ").append(scores.get(userSockets.get(j))).append("\n");
@@ -123,6 +126,8 @@ public class TriviaGame implements Runnable {
             for (Player player : userSockets.getList()) {
                 sendMessage(player.getSocketChannel(), scoresMsg.toString());
             }
+
+//            Utils.wait_msg(50);
 
             answers.clear();
         }
