@@ -3,31 +3,27 @@ package main;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public final class Utils {
 
-    public static synchronized void sendMessage(SocketChannel socketChannel, String message) {
+    public static synchronized void sendMessage(SocketChannel socketChannel, String message, String type) {
 
-        Utils.wait_msg(50);
+        Utils.wait_msg(75);
 
         try {
-
-            message += "\n";
+            message = Utils.serializeMessage(new Message(type, message));
             ByteBuffer buffer = ByteBuffer.allocate(1024);
             buffer.put(message.getBytes());
             buffer.flip();
             socketChannel.write(buffer);
-
-            buffer.clear(); // Clear buffer for next message
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static synchronized String receiveMessage(SocketChannel socket) {
+    public static synchronized Message receiveMessage(SocketChannel socket) {
         String message = null;
         try {
             ByteBuffer buffer = ByteBuffer.allocate(1024);
@@ -38,26 +34,26 @@ public final class Utils {
                 buffer.get(bytes);
                 message = new String(bytes).trim();
             }
-            buffer.clear();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return message;
+        assert message != null;
+        return Utils.deserializeMessage(message);
     }
     
     private static String serializeMessage(Message message) {
         // Serialize the message object to a string representation
         // Example: "type:question;content:What is your name?"
-        return "type:" + message.getType() + "//content:" + message.getContent();
+        return "type->" + message.getType() + "~content->" + message.getContent();
     }
 
-    private static Message deserializeMessage(String message) {
+    static Message deserializeMessage(String message) {
         // Deserialize the string representation to a message object
         // Example: "type:question;content:What is your name?"
         //          -> Message("question", "What is your name?")
-        String[] split = message.split("//");
-        String type = split[0].split(":")[1];
-        String content = split[1].split(":")[1];
+        String[] split = message.split("~");
+        String type = split[0].split("->")[1];
+        String content = split[1].split("->")[1];
         return new Message(type, content);
     }
 

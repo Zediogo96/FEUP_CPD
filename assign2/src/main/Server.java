@@ -164,20 +164,20 @@ public class Server {
             while (gameIterator.hasNext()) {
                 TriviaGame game = gameIterator.next();
                 if (game.isGameOver()) {
-                    System.out.println("Removed game room with UUID: " + activeGames.get(game) + " because it is over");
+                    System.out.println("> Removed game room with UUID: " + activeGames.get(game) + " -> Reason: Game over");
                     for (Player player : game.getUserSockets()) {
                         lock.lock();
                         try {
                             waitingPlayers.add(player);
                             player.setIsInGame(false);
-                            Utils.sendMessage(player.getSocketChannel(), "Game over! You have been added to the waiting list.");
+                            Utils.sendMessage(player.getSocketChannel(), "Game over! You have been added to the waiting list.", "server");
                         } finally {
                             lock.unlock();
                         }
                     }
                     gameIterator.remove();
                 } else if (game.roomEmpty()) {
-                    System.out.println("Removed game room with UUID: " + activeGames.get(game) + " because it is empty");
+                    System.out.println("> Removed game room with UUID: " + activeGames.get(game) + " -> Reason: Empty Game Room");
                     gameIterator.remove();
                 }
             }
@@ -219,7 +219,11 @@ public class Server {
                     // Split the message from the Client and trim it
                     String message = new String(bytes);
 
-                    List<String> messageParts = Arrays.asList(message.trim().split("\\s+"));
+                    if (message.isEmpty()) continue;
+
+                    Message msg = Utils.deserializeMessage(message);
+
+                    List<String> messageParts = Arrays.asList(msg.getContent().trim().split("\\s+"));
 
                     if (messageParts.get(0).equals("register") && messageParts.size() == 3) {
                         handleRegistration(clientSocketChannel, messageParts.get(1), messageParts.get(2));
@@ -283,7 +287,7 @@ public class Server {
                     if (parts[1].equals(password)) {
 
                         System.out.println("> Authentication Successful for username: " + username);
-                        Utils.sendMessage(socket, "> Authentication Successful for username: " + username);
+                        Utils.sendMessage(socket, "> Authentication Successful for username: " + username, "server");
                         Player player = new Player(username, socket, parts[3], Integer.parseInt(parts[2]));
 
                         // IF THE PLAYER IS ON THE DISCONNECTED PLAYERS MAP, RESTORE IT TO ITS ORIGINAL POSITION
@@ -291,7 +295,7 @@ public class Server {
                             String uuid = disconnected_from_game.get(player.getToken());
                             TriviaGame game = activeGames.keySet().stream().filter(g -> g.getGame_UUID().equals(uuid)).findFirst().orElse(null);
                             if (game != null) {
-                                Utils.sendMessage(socket, "\nYou have been reconnected to your previous game.\n");
+                                Utils.sendMessage(socket, "\nYou have been reconnected to your previous game.\n", "server");
                                 game.addPlayer(player);
                                 disconnected_from_game.remove(player.getToken());
                                 break;
@@ -309,20 +313,20 @@ public class Server {
                             // REMOVE IT FROM THE DISCONNECTED PLAYERS MAP
                             disconnectedPlayers.remove(player.getToken());
 
-                            Utils.sendMessage(socket, "\nYour position in the waiting queue has been restored: " + (index + 1) + ".");
+                            Utils.sendMessage(socket, "\nYour position in the waiting queue has been restored: " + (index + 1) + ".", "server");
                             break;
                         }
                         waitingPlayers.add(player);
-                        Utils.sendMessage(socket, "\nYou have been added to the waiting list, please wait...");
+                        Utils.sendMessage(socket, "\nYou have been added to the waiting list, please wait...", "server");
                         break;
                     } else {
                         System.out.println("> Authentication Failed for username: " + username);
-                        Utils.sendMessage(socket, "> Authentication Failed for username: " + username + ". Incorrect password.");
+                        Utils.sendMessage(socket, "> Authentication Failed for username: " + username + ". Incorrect password.", "server");
                     }
                 }
 
                 System.out.println("> Authentication Failed for username: " + username);
-                Utils.sendMessage(socket, "> Authentication failed for username: " + username + ". Username does not exist. --(kill)\n");
+                Utils.sendMessage(socket, "> Authentication failed for username: " + username + ". Username does not exist. \n", "server");
                 socket.close();
                 return;
             }
@@ -345,7 +349,7 @@ public class Server {
                 if (parts[0].equals(username)) {
                     System.out.println("\nRegistration failed. Username already exists: " + username);
                     // Send message to client
-                    Utils.sendMessage(socket, "Registration failed. Username already exists: " + username);
+                    Utils.sendMessage(socket, "Registration failed. Username already exists: " + username, "registration");
                     socket.close();
                     return;
                 }
@@ -360,7 +364,7 @@ public class Server {
             out.println(username + ":" + password + ":" + 1200 + ":" + token);
             out.flush();
             System.out.println("\nRegistration successful for username: " + username);
-            Utils.sendMessage(socket, "Registration successful for username: " + username);
+            Utils.sendMessage(socket, "Registration successful for username: " + username, "registration");
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -384,7 +388,7 @@ public class Server {
             long waitTime = now - curr_player.getLastQueuedTime();
 
             if (waitTime >= WAIT_TIME_MATCHMAKING_THRESHOLD) {
-                Utils.sendMessage(curr_player.getSocketChannel(), "You have been waiting for a long time, expanding your rank range...");
+                Utils.sendMessage(curr_player.getSocketChannel(), "You have been waiting for a long time, expanding your rank range...", "server");
                 curr_player.incrementCurrentRankRange(CURRENT_RANKING_DIFFERENCE_THRESHOLD);
             }
 
@@ -405,7 +409,7 @@ public class Server {
                             player.setDefaultRankRange();
                         }
 
-                        System.out.println("Matchmaking successful!");
+                        System.out.println("> Matchmaking successful!");
                         return players;
                     }
                 }

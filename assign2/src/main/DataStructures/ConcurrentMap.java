@@ -9,13 +9,12 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class ConcurrentMap<K, V> {
 
     private final Map<K, V> map;
-    private final ReentrantReadWriteLock lock;
     private final Lock readLock;
     private final Lock writeLock;
 
     public ConcurrentMap() {
         map = new HashMap<>();
-        lock = new ReentrantReadWriteLock();
+        ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         readLock = lock.readLock();
         writeLock = lock.writeLock();
     }
@@ -47,10 +46,10 @@ public class ConcurrentMap<K, V> {
         }
     }
 
-    public V remove(K key) {
+    public void remove(K key) {
         writeLock.lock();
         try {
-            return map.remove(key);
+            map.remove(key);
         } finally {
             writeLock.unlock();
         }

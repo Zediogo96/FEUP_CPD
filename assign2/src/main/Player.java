@@ -67,16 +67,8 @@ public class Player {
         this.currentRankRange += amount;
     }
 
-    public boolean isDisconnected() {
-        return isDisconnected;
-    }
-
     public String getCurrentGameUUID() {
         return currentgame_UUID;
-    }
-
-    public void setCurrentGameUUID(String uuid) {
-        this.currentgame_UUID = uuid;
     }
 
     public void setIsInGame(Boolean isInGame) {

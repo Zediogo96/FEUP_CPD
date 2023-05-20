@@ -1,8 +1,8 @@
 package main.Game;
 
-import jdk.jshell.execution.Util;
 import main.DataStructures.ConcurrentArrayList;
 import main.DataStructures.ConcurrentMap;
+import main.Message;
 import main.Player;
 import main.Utils;
 
@@ -55,7 +55,7 @@ public class TriviaGame implements Runnable {
 
         ConcurrentMap<Socket, Integer> answers = new ConcurrentMap<>();
 
-        for (Player player : userSockets.getList()) sendMessage(player.getSocketChannel(), initMsg);
+        for (Player player : userSockets.getList()) sendMessage(player.getSocketChannel(), initMsg, "server");
 
         for (int i = 0; i < NUM_ROUNDS; i++) {
 
@@ -77,13 +77,13 @@ public class TriviaGame implements Runnable {
 
                     try {
                         if (socket.getSocketChannel().socket().getInputStream().available() > 0 && !answers.containsKey(socket.getSocketChannel().socket()) && !socket.getSocketChannel().socket().isClosed()) {
-                            String answer = Utils.receiveMessage(socket.getSocketChannel());
-                            if (Objects.equals(answer, "") || answer == null) answer = "0\n";
+                            Message answer = Utils.receiveMessage(socket.getSocketChannel());
+                            if (Objects.equals(answer.getContent(), "") || answer.getContent() == null) answer.setContent("0\n");
 
-                            answer = answer.replace("\n", "");
+                            answer.setContent(answer.getContent().replace("\n", ""));
 
-                            System.out.println("> Received answer: " + answer + " from " + socket.getUserName() + " in game " + this.getGame_UUID());
-                            answers.put(socket.getSocketChannel().socket(), Integer.parseInt(answer));
+                            System.out.println("> Received answer: " + answer.getContent() + " from " + socket.getUserName() + " in game " + this.getGame_UUID());
+                            answers.put(socket.getSocketChannel().socket(), Integer.parseInt(answer.getContent()));
                             numAnswersReceived++;
                         }
                     } catch (IOException e) {
@@ -99,10 +99,9 @@ public class TriviaGame implements Runnable {
                     for (Player player : userSockets.getList()) {
 
                         if (!answers.containsKey(player.getSocketChannel().socket())) {
-                            sendMessage(player.getSocketChannel(), "You did not answer in time!");
+                            sendMessage(player.getSocketChannel(), "You did not answer in time!", "server");
                         }
                     }
-//                    Utils.wait_msg(50);
                     System.out.println("> Timeout reached, moving on to next question");
                     break;
                 }
@@ -110,13 +109,11 @@ public class TriviaGame implements Runnable {
             for (Player player : userSockets.getList()) {
                 if (Objects.equals(answers.get(player.getSocketChannel().socket()), question.getCorrectAnswerIndex())) {
                     scores.put(player, scores.get(player) + 1);
-                    sendMessage(player.getSocketChannel(), "Your answer was correct!");
+                    sendMessage(player.getSocketChannel(), "Your answer was correct!", "server");
                 } else {
-                    sendMessage(player.getSocketChannel(), "Your answer was incorrect! The correct answer was: " + question.getCorrectAnswerIndex());
+                    sendMessage(player.getSocketChannel(), "Your answer was incorrect! The correct answer was: " + question.getCorrectAnswerIndex(), "server");
                 }
             }
-
-//            Utils.wait_msg(50);
 
             StringBuilder scoresMsg = new StringBuilder("Scores:\n");
             for (int j = 0; j < userSockets.size(); j++) {
@@ -124,10 +121,8 @@ public class TriviaGame implements Runnable {
             }
 
             for (Player player : userSockets.getList()) {
-                sendMessage(player.getSocketChannel(), scoresMsg.toString());
+                sendMessage(player.getSocketChannel(), scoresMsg.toString(), "scores");
             }
-
-//            Utils.wait_msg(50);
 
             answers.clear();
         }
@@ -136,11 +131,11 @@ public class TriviaGame implements Runnable {
 
         for (Player player : userSockets.getList()) {
 
-            if (winner == null) sendMessage(player.getSocketChannel(), "It's a tie! Everyone wins!");
+            if (winner == null) sendMessage(player.getSocketChannel(), "It's a tie! Everyone wins!", "server");
             else {
-                if (player.equals(winner)) sendMessage(player.getSocketChannel(), "You won!");
+                if (player.equals(winner)) sendMessage(player.getSocketChannel(), "You won!", "server");
                 else
-                    sendMessage(player.getSocketChannel(), "You lost! :( The winner was " + winner.getUserName() + ".");
+                    sendMessage(player.getSocketChannel(), "You lost! :( The winner was " + winner.getUserName() + ".", "server");
             }
             try {
                 updatePlayerLevel(player);
@@ -154,7 +149,6 @@ public class TriviaGame implements Runnable {
     private void sendQuestion(SocketChannel socket, TriviaQuestion question) {
 
         long time_left = TIMEOUT - (System.currentTimeMillis() - startTime) + 100;
-        System.out.println("> Time left: " + time_left);
 
         String fullQuestion =
                 "********************************************************************\n\n"
@@ -166,7 +160,7 @@ public class TriviaGame implements Runnable {
                 + "********************************************************************"
                 + "//" + time_left;
 
-        Utils.sendMessage(socket, fullQuestion);
+        Utils.sendMessage(socket, fullQuestion, "question");
     }
 
     private Player getWinner() {

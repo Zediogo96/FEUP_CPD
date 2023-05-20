@@ -24,8 +24,4 @@ public class TriviaQuestion {
     public Integer getCorrectAnswerIndex() {
         return correctAnswerIndex;
     }
-
-    public String getCorrectAnswer() {
-        return answers.get(correctAnswerIndex - 1);
-    }
 }

@@ -8,7 +8,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.Arrays;
 
 import static java.lang.System.exit;
 
@@ -37,9 +36,9 @@ public class Client {
                         System.out.println("Connected to server");
                     }
                     if (args.length == 3 && args[0].equals("register")) {
-                        Utils.sendMessage(socketChannel, "register " + args[1] + " " + args[2]);
+                        Utils.sendMessage(socketChannel, "register " + args[1] + " " + args[2], "registration");
                     } else if (args.length == 3 && args[0].equals("login")) {
-                        Utils.sendMessage(socketChannel, "login " + args[1] + " " + args[2]);
+                        Utils.sendMessage(socketChannel, "login " + args[1] + " " + args[2], "auth");
                     } else {
                         System.out.println("Invalid arguments");
                         exit(1);
@@ -57,13 +56,15 @@ public class Client {
 
                     String serverMsg = new String(buffer.array(), 0, buffer.limit());
 
+                    Message msg = Utils.deserializeMessage(serverMsg);
+
                     if (serverMsg.length() == 0) {
                         continue;
                     }
 
-                    if (serverMsg.contains("Question:")) {
+                    if (msg.getType().equals("question")) {
 
-                        String[] split = serverMsg.split("//");
+                        String[] split = msg.getContent().split("//");
 
                         String question = split[0];
                         String time = split[1].replace("\n", "");
@@ -73,7 +74,7 @@ public class Client {
                         System.out.println("\n" + question.replace(";", "\n"));
                         System.out.println("\nEnter your answer: ");
 
-                        BufferedReader reader = null;
+                        BufferedReader reader;
 
                         reader = new BufferedReader(new InputStreamReader(System.in));
                         startTime = System.currentTimeMillis();
@@ -85,7 +86,7 @@ public class Client {
                                 if (reader.ready()) {
                                     Integer answer = Integer.parseInt(reader.readLine());
                                     if (answer >= 1 && answer <= 4) {
-                                        Utils.sendMessage(socketChannel, String.valueOf(answer));
+                                        Utils.sendMessage(socketChannel, String.valueOf(answer), "answer");
                                         waitingForAnswer = false;
                                         validAnswer = true;
                                     }
@@ -95,21 +96,21 @@ public class Client {
                             }
                         }
                         if (!validAnswer) {
-                            Utils.sendMessage(socketChannel, "0");
+                            Utils.sendMessage(socketChannel, "0", "answer");
                             waitingForAnswer = false;
                         }
-                    } else if (serverMsg.contains("Scores:")) {
-                        System.out.println("\n" + serverMsg.replace(";", "\n"));
-                    } else if (serverMsg.contains("Registration")) {
+                    } else if (msg.getType().equals("scores")) {
+                        System.out.println("\n" + msg.getContent().replace(";", "\n"));
+                    } else if (msg.getType().equals("registration")) {
                         if (serverMsg.contains("successful")) {
-                            System.out.println("\n> Server: " + serverMsg);
+                            System.out.println("\n> Server: " + msg.getContent());
                             System.out.println("Please login with your new credentials.");
                         } else {
-                            System.out.println("\n> Server: " + serverMsg);
+                            System.out.println("\n> Server: " + msg.getContent());
                         }
                         System.exit(0);
                     } else {
-                        System.out.println("\n> Server: " + serverMsg);
+                        System.out.println("\n> Server: " + msg.getContent());
                     }
                 }
             }

@@ -14,6 +14,7 @@
       <change beforePath="$PROJECT_DIR$/src/main/DataStructures/ConcurrentArrayList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/DataStructures/ConcurrentArrayList.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/DataStructures/ConcurrentMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/DataStructures/ConcurrentMap.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/Game/TriviaGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Game/TriviaGame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/Game/TriviaQuestion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Game/TriviaQuestion.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/Player.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Player.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Player.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Server.class" afterDir="false" />
