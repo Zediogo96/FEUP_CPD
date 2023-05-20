@@ -14,6 +14,8 @@ import java.nio.channels.SocketChannel;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Server {
@@ -43,6 +45,10 @@ public class Server {
      * Value: Game's Unique Identifier
      */
     public static ConcurrentMap<String, String> disconnected_from_game = new ConcurrentMap<>();
+
+
+    static ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+
 
     public static void main(String[] args) throws IOException {
 
@@ -107,18 +113,21 @@ public class Server {
 
         Map<SocketChannel, ByteBuffer> bufferMap = new HashMap<>();
 
-        while (true) {
-
+        Runnable task = () -> {
             System.out.println("\n--------------------------------------------");
             System.out.println("Waiting players: " + waitingPlayers.size());
             System.out.println("Active games: " + activeGames.size());
             System.out.println("--------------------------------------------\n");
 
-            /* print all waiting players */
             System.out.println("Waiting players:");
             for (int i = 0; i < waitingPlayers.size(); i++) {
                 System.out.println("[" + i + "] " + waitingPlayers.get(i).getUserName());
             }
+        };
+
+        executor.scheduleAtFixedRate(task, 0, 5, TimeUnit.SECONDS);
+
+        while (true) {
 
             if (activeGames.size() < MAX_GAMES) {
 
@@ -134,8 +143,7 @@ public class Server {
                         activeGames.put(game, uuid);
                         threadPool.execute(game);
                     }
-                }
-                else {
+                } else {
                     if (waitingPlayers.size() >= PLAYERS_PER_GAME) {
                         ConcurrentArrayList<Player> players = new ConcurrentArrayList<>();
                         for (int i = 0; i < PLAYERS_PER_GAME; i++) {
@@ -167,8 +175,7 @@ public class Server {
                         }
                     }
                     gameIterator.remove();
-                }
-                else if (game.roomEmpty()) {
+                } else if (game.roomEmpty()) {
                     System.out.println("Removed empty game room with UUID: " + activeGames.get(game));
                     gameIterator.remove();
                 }
@@ -222,6 +229,7 @@ public class Server {
                 }
                 keyIterator.remove();
             }
+            executor.shutdown();
         }
     }
 

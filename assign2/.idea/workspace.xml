@@ -8,22 +8,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d215891a-fa80-4998-8a47-848457f6ad99" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/assign2.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/Client.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Client.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Client.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/DataStructures/ConcurrentArrayList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/DataStructures/ConcurrentArrayList.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/DataStructures/ConcurrentMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/DataStructures/ConcurrentMap.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/Game/TriviaGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Game/TriviaGame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/Player.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/Player.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Player.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Player.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/Server.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Server.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Server.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/Utils.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/Utils.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Utils.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/Utils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Utils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/data/users.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/data/users.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/run.sh" beforeDir="false" afterPath="$PROJECT_DIR$/src/run.sh" afterDir="false" />

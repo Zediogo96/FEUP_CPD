@@ -26,7 +26,8 @@ public class Client {
         Selector selector = Selector.open();
         socketChannel.register(selector, SelectionKey.OP_CONNECT);
 
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
+
+
         while (true) {
             selector.select();
             for (SelectionKey key : selector.selectedKeys()) {
@@ -44,12 +45,16 @@ public class Client {
                         exit(1);
                     }
                 } else if (key.isReadable()) {
-                    buffer.clear();
+
+                    ByteBuffer buffer = ByteBuffer.allocate(1024);
                     int bytesRead = socketChannel.read(buffer);
+
                     if (bytesRead == -1) {
                         break;
                     }
+
                     buffer.flip();
+
                     String serverMsg = new String(buffer.array(), 0, buffer.limit());
 
                     if (serverMsg.length() == 0) {
@@ -73,6 +78,7 @@ public class Client {
                         reader = new BufferedReader(new InputStreamReader(System.in));
                         startTime = System.currentTimeMillis();
 
+
                         boolean validAnswer = false;
                         while (!validAnswer && System.currentTimeMillis() - startTime <= TIMEOUT) {
                             try {
@@ -92,8 +98,6 @@ public class Client {
                             Utils.sendMessage(socketChannel, "0");
                             waitingForAnswer = false;
                         }
-
-
                     } else if (serverMsg.contains("Scores:")) {
                         System.out.println("\n" + serverMsg.replace(";", "\n"));
                     } else if (serverMsg.contains("Registration")) {

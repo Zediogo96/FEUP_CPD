@@ -19,7 +19,6 @@ import static main.Utils.sendMessage;
 public class TriviaGame implements Runnable {
     public static final int TIMEOUT = 25000;
     private static int NUM_ROUNDS = 2;
-
     private static int numPlayers = 0;
     private final List<TriviaQuestion> questions;
     private final List<TriviaQuestion> gameQuestions;
@@ -28,7 +27,6 @@ public class TriviaGame implements Runnable {
     private final String game_UUID;
     public boolean isGameOver = false;
     public ConcurrentMap<String, Integer> disconnected_players_score;
-
     long startTime;
 
     public int CURRENT_GAME_ROUND = 0;
@@ -73,8 +71,6 @@ public class TriviaGame implements Runnable {
 
             int numAnswersReceived = 0;
 
-
-
             while ((numAnswersReceived - disconnected_players_score.size()) < numPlayers) {
                 userSockets.lock();
                 for (Player socket : userSockets.getList()) {
@@ -82,6 +78,8 @@ public class TriviaGame implements Runnable {
                     try {
                         if (socket.getSocketChannel().socket().getInputStream().available() > 0 && !answers.containsKey(socket.getSocketChannel().socket()) && !socket.getSocketChannel().socket().isClosed()) {
                             String answer = Utils.receiveMessage(socket.getSocketChannel());
+                            if (Objects.equals(answer, "")) answer = "0\n";
+
                             answer = answer.replace("\n", "");
 
                             System.out.println("> Received answer: " + answer + " from " + socket.getUserName() + " in game " + this.getGame_UUID());
@@ -96,7 +94,7 @@ public class TriviaGame implements Runnable {
                 // CHECK IF TIMEOUT HAS BEEN REACHED
                 long elapsedTime = System.currentTimeMillis() - startTime;
 
-                if (elapsedTime >= TIMEOUT) {
+                if (elapsedTime >= TIMEOUT + 100) {
 
                     for (Player player : userSockets.getList()) {
 
@@ -150,7 +148,7 @@ public class TriviaGame implements Runnable {
 
     private void sendQuestion(SocketChannel socket, TriviaQuestion question) {
 
-        long time_left = TIMEOUT - (System.currentTimeMillis() - startTime);
+        long time_left = TIMEOUT - (System.currentTimeMillis() - startTime) + 100;
         System.out.println("> Time left: " + time_left);
 
         String fullQuestion =
@@ -239,13 +237,13 @@ public class TriviaGame implements Runnable {
     }
 
     public List<TriviaQuestion> getRandomQuestions(int number) {
-        List<TriviaQuestion> randomQuestions = new ArrayList<>();
+        Set<TriviaQuestion> randomQuestions = new HashSet<>();
         Random random = new Random();
-        for (int i = 0; i < number; i++) {
+        while (randomQuestions.size() < number) {
             int index = random.nextInt(questions.size());
             randomQuestions.add(questions.get(index));
         }
-        return randomQuestions;
+        return new ArrayList<>(randomQuestions);
     }
 
     public List<Player> getUserSockets() {

@@ -12,12 +12,12 @@ public final class Utils {
         try {
 
             message += "\n";
-            ByteBuffer buffer = ByteBuffer.wrap(message.getBytes());
+            ByteBuffer buffer = ByteBuffer.allocate(1024);
+            buffer.put(message.getBytes());
+            buffer.flip();
             socketChannel.write(buffer);
 
-            buffer.rewind();
             buffer.clear(); // Clear buffer for next message
-
 
         } catch (IOException e) {
             throw new RuntimeException(e);
