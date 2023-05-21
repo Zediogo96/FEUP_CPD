@@ -1,127 +1,352 @@
 [
   {
     "question": "Which planet in our solar system is known for its rings?",
-    "answers": ["Jupiter", "Saturn", "Mars", "Venus"],
+    "answers": [
+      "Jupiter",
+      "Saturn",
+      "Mars",
+      "Venus"
+    ],
     "correctAnswerIndex": 2
   },
   {
     "question": "What is the smallest continent by land area?",
-    "answers": ["Africa", "Europe", "Oceania", "Australia"],
+    "answers": [
+      "Africa",
+      "Europe",
+      "Oceania",
+      "Australia"
+    ],
     "correctAnswerIndex": 3
   },
   {
     "question": "What is the capital of Spain?",
-    "answers": ["Barcelona", "Madrid", "Seville", "Valencia"],
+    "answers": [
+      "Barcelona",
+      "Madrid",
+      "Seville",
+      "Valencia"
+    ],
     "correctAnswerIndex": 2
   },
   {
     "question": "What is the highest mountain in Africa?",
-    "answers": ["Kilimanjaro", "Everest", "Denali", "Aconcagua"],
+    "answers": [
+      "Kilimanjaro",
+      "Everest",
+      "Denali",
+      "Aconcagua"
+    ],
     "correctAnswerIndex": 1
   },
   {
     "question": "What is the name of the fictional detective created by Sir Arthur Conan Doyle?",
-    "answers": ["Hercule Poirot", "Miss Marple", "Sherlock Holmes", "Nancy Drew"],
+    "answers": [
+      "Hercule Poirot",
+      "Miss Marple",
+      "Sherlock Holmes",
+      "Nancy Drew"
+    ],
     "correctAnswerIndex": 3
   },
   {
     "question": "What is the chemical symbol for gold?",
-    "answers": ["Ag", "Au", "Fe", "Cu"],
+    "answers": [
+      "Ag",
+      "Au",
+      "Fe",
+      "Cu"
+    ],
     "correctAnswerIndex": 2
   },
   {
     "question": "What is the largest organ in the human body?",
-    "answers": ["Liver", "Lungs", "Heart", "Skin"],
+    "answers": [
+      "Liver",
+      "Lungs",
+      "Heart",
+      "Skin"
+    ],
     "correctAnswerIndex": 4
   },
   {
     "question": "What is the highest grossing movie of all time?",
-    "answers": ["Avatar", "Avengers: Endgame", "Titanic", "Star Wars: The Force Awakens"],
+    "answers": [
+      "Avatar",
+      "Avengers: Endgame",
+      "Titanic",
+      "Star Wars: The Force Awakens"
+    ],
     "correctAnswerIndex": 1
   },
   {
     "question": "What is the largest country by land area?",
-    "answers": ["Russia", "China", "United States", "Canada"],
+    "answers": [
+      "Russia",
+      "China",
+      "United States",
+      "Canada"
+    ],
     "correctAnswerIndex": 1
   },
   {
     "question": "What is the name of the famous street in New York City that is home to many theaters?",
-    "answers": ["Broadway", "Wall Street", "Fifth Avenue", "Madison Avenue"],
+    "answers": [
+      "Broadway",
+      "Wall Street",
+      "Fifth Avenue",
+      "Madison Avenue"
+    ],
     "correctAnswerIndex": 1
   },
   {
     "question": "What is the largest organ inside the human body?",
-    "answers": ["Liver", "Lungs", "Heart", "Brain"],
+    "answers": [
+      "Liver",
+      "Lungs",
+      "Heart",
+      "Brain"
+    ],
     "correctAnswerIndex": 4
   },
   {
     "question": "What is the name of the largest ocean on Earth?",
-    "answers": ["Atlantic", "Indian", "Arctic", "Pacific"],
+    "answers": [
+      "Atlantic",
+      "Indian",
+      "Arctic",
+      "Pacific"
+    ],
     "correctAnswerIndex": 4
   },
   {
     "question": "What is the name of the tallest animal in the world?",
-    "answers": ["Elephant", "Giraffe", "Horse", "Rhinoceros"],
+    "answers": [
+      "Elephant",
+      "Giraffe",
+      "Horse",
+      "Rhinoceros"
+    ],
     "correctAnswerIndex": 2
   },
   {
     "question": "What is the smallest unit of matter?",
-    "answers": ["Molecule", "Atom", "Cell", "Neuron"],
+    "answers": [
+      "Molecule",
+      "Atom",
+      "Cell",
+      "Neuron"
+    ],
     "correctAnswerIndex": 2
   },
   {
     "question": "What is the name of the process by which plants make their own food?",
-    "answers": ["Photosynthesis", "Respiration", "Digestion", "Assimilation"],
+    "answers": [
+      "Photosynthesis",
+      "Respiration",
+      "Digestion",
+      "Assimilation"
+    ],
     "correctAnswerIndex": 1
   },
   {
     "question": "What is the smallest planet in our solar system?",
-    "answers": ["Venus", "Mars", "Mercury", "Neptune"],
+    "answers": [
+      "Venus",
+      "Mars",
+      "Mercury",
+      "Neptune"
+    ],
     "correctAnswerIndex": 3
   },
   {
     "question": "What is the name of the person who invented the telephone?",
-    "answers": ["Thomas Edison", "Nikola Tesla", "Alexander Graham Bell", "Benjamin Franklin"],
+    "answers": [
+      "Thomas Edison",
+      "Nikola Tesla",
+      "Alexander Graham Bell",
+      "Benjamin Franklin"
+    ],
     "correctAnswerIndex": 3
   },
   {
     "question": "What is the largest mammal in the world?",
-    "answers": ["Elephant", "Giraffe", "Hippopotamus", "Blue whale"],
+    "answers": [
+      "Elephant",
+      "Giraffe",
+      "Hippopotamus",
+      "Blue whale"
+    ],
     "correctAnswerIndex": 4
   },
   {
     "question": "What is the name of the person who painted the Mona Lisa?",
-    "answers": ["Leonardo da Vinci", "Pablo Picasso", "Vincent van Gogh", "Michelangelo"],
+    "answers": [
+      "Leonardo da Vinci",
+      "Pablo Picasso",
+      "Vincent van Gogh",
+      "Michelangelo"
+    ],
     "correctAnswerIndex": 1
   },
   {
     "question": "What is the name of the currency used in the United Kingdom?",
-    "answers": ["Pound", "Dollar", "Euro", "Yen"],
+    "answers": [
+      "Pound",
+      "Dollar",
+      "Euro",
+      "Yen"
+    ],
     "correctAnswerIndex": 1
   },
   {
     "question": "What is the name of the process by which animals convert food into energy?",
-    "answers": ["Photosynthesis", "Respiration", "Digestion", "Assimilation"],
+    "answers": [
+      "Photosynthesis",
+      "Respiration",
+      "Digestion",
+      "Assimilation"
+    ],
     "correctAnswerIndex": 3
   },
   {
     "question": "What is the name of the person who founded Microsoft?",
-    "answers": ["Steve Jobs", "Bill Gates", "Mark Zuckerberg", "Larry Page"],
+    "answers": [
+      "Steve Jobs",
+      "Bill Gates",
+      "Mark Zuckerberg",
+      "Larry Page"
+    ],
     "correctAnswerIndex": 2
   },
   {
     "question": "What is the name of the smallest country in the world?",
-    "answers": ["Monaco", "Vatican City", "Nauru", "San Marino"],
+    "answers": [
+      "Monaco",
+      "Vatican City",
+      "Nauru",
+      "San Marino"
+    ],
     "correctAnswerIndex": 1
   },
   {
     "question": "What is the name of the largest bird in the world?",
-    "answers": ["Ostrich", "Eagle", "Penguin", "Emu"],
+    "answers": [
+      "Ostrich",
+      "Eagle",
+      "Penguin",
+      "Emu"
+    ],
     "correctAnswerIndex": 1
   },
   {
     "question": "What is the name of the person who wrote the novel 'To Kill a Mockingbird'?",
-    "answers": ["Jane Austen", "F. Scott Fitzgerald", "Harper Lee", "Charles Dickens"],
+    "answers": [
+      "Jane Austen",
+      "F. Scott Fitzgerald",
+      "Harper Lee",
+      "Charles Dickens"
+    ],
     "correctAnswerIndex": 3
+  },
+  {
+    "question": "What is the name of the person who invented the light bulb?",
+    "answers": [
+      "Thomas Edison",
+      "Nikola Tesla",
+      "Alexander Graham Bell",
+      "Benjamin Franklin"
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "question": "What is the name of the person who founded Apple?",
+    "answers": [
+      "Steve Jobs",
+      "Bill Gates",
+      "Mark Zuckerberg",
+      "Larry Page"
+    ],
+    "correctAnswerIndex": 1
+  },
+  {
+    "question": "What is the name of the person who founded Facebook?",
+    "answers": [
+      "Steve Jobs",
+      "Bill Gates",
+      "Mark Zuckerberg",
+      "Larry Page"
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "question": "What is the name of the person who founded Amazon?",
+    "answers": [
+      "Steve Jobs",
+      "Bill Gates",
+      "Mark Zuckerberg",
+      "Jeff Bezos"
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "question": "What is the name of the person who founded Tesla?",
+    "answers": [
+      "Steve Jobs",
+      "Bill Gates",
+      "Mark Zuckerberg",
+      "Elon Musk"
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "question": "What is the name of the person who founded SpaceX?",
+    "answers": [
+      "Steve Jobs",
+      "Bill Gates",
+      "Mark Zuckerberg",
+      "Elon Musk"
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "question": "What is the name of the person who founded Google?",
+    "answers": [
+      "Steve Jobs",
+      "Bill Gates",
+      "Mark Zuckerberg",
+      "Larry Page"
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "question": "Which of the following is not a primary color?",
+    "answers": [
+      "Red",
+      "Blue",
+      "Green",
+      "Yellow"
+    ],
+    "correctAnswerIndex": 3
+  },
+  {
+    "question": "Which of the following was not a book written by Stephen King?",
+    "answers": [
+      "The Shining",
+      "The Stand",
+      "Carrie",
+      "The Silence of the Lambs"
+    ],
+    "correctAnswerIndex": 4
+  },
+  {
+    "question": "Who won the f1 championship in 2021? ;)\",
+    "answers": [
+      "Lewis Hamilton",
+      "Max Verstappen",
+      "Valtteri Bottas",
+      "Charles Leclerc"
+    ],
+    "correctAnswerIndex": 1
   }
 ]

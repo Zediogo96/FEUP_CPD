@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 import static main.Utils.sendMessage;
 
 public class TriviaGame implements Runnable {
-    public static final int TIMEOUT = 1000;
+    public static final int TIMEOUT = 30000;
     private static int NUM_ROUNDS = 2;
     private static int numPlayers = 0;
     private final List<TriviaQuestion> questions;
@@ -34,10 +34,10 @@ public class TriviaGame implements Runnable {
     public TriviaGame(int number_of_rounds, ConcurrentArrayList<Player> userSockets, String uuid) throws IOException {
 
         this.questions = loadQuestions();
-        this.gameQuestions = getRandomQuestions(NUM_ROUNDS);
         this.userSockets = userSockets;
         this.scores = new ConcurrentMap<>();
         NUM_ROUNDS = number_of_rounds;
+        this.gameQuestions = getRandomQuestions(NUM_ROUNDS);
         this.game_UUID = uuid;
         this.disconnected_players_score = new ConcurrentMap<>();
         numPlayers = userSockets.size();
@@ -51,6 +51,7 @@ public class TriviaGame implements Runnable {
     public void run() {
 
         System.out.println("> Sending game start message to all players");
+        System.out.println("NUM ROUNDS " + NUM_ROUNDS);
         String initMsg = "Game " + this.getGame_UUID() + " started with " + userSockets.size() + " players";
 
         ConcurrentMap<Socket, Integer> answers = new ConcurrentMap<>();
@@ -77,7 +78,11 @@ public class TriviaGame implements Runnable {
 
                     try {
                         if (socket.getSocketChannel().socket().getInputStream().available() > 0 && !answers.containsKey(socket.getSocketChannel().socket()) && !socket.getSocketChannel().socket().isClosed()) {
-                            Message answer = Utils.receiveMessage(socket.getSocketChannel());
+                            Message answer;
+                            if ((answer = Utils.receiveMessage(socket.getSocketChannel())) == null) {
+                                answer = new Message("answer", "0");
+                            }
+
                             if (Objects.equals(answer.getContent(), "") || answer.getContent() == null) answer.setContent("0\n");
 
                             answer.setContent(answer.getContent().replace("\n", ""));
@@ -91,6 +96,7 @@ public class TriviaGame implements Runnable {
                     }
                 }
                 userSockets.unlock();
+
                 // CHECK IF TIMEOUT HAS BEEN REACHED
                 long elapsedTime = System.currentTimeMillis() - startTime;
 
@@ -106,6 +112,8 @@ public class TriviaGame implements Runnable {
                     break;
                 }
             }
+
+            // CHECK AND INFORM PLAYERS IF THEIR ANSWER WAS CORRECT
             for (Player player : userSockets.getList()) {
                 if (Objects.equals(answers.get(player.getSocketChannel().socket()), question.getCorrectAnswerIndex())) {
                     scores.put(player, scores.get(player) + 1);
@@ -115,6 +123,8 @@ public class TriviaGame implements Runnable {
                 }
             }
 
+
+            // SEND SCORES TO ALL PLAYERS
             StringBuilder scoresMsg = new StringBuilder("Scores:\n");
             for (int j = 0; j < userSockets.size(); j++) {
                 scoresMsg.append("Player ").append(j + 1).append(": ").append(scores.get(userSockets.get(j))).append("\n");
@@ -127,7 +137,10 @@ public class TriviaGame implements Runnable {
             answers.clear();
         }
 
+
         Player winner = getWinner();
+
+        System.out.println("> Updating player levels for all players in game " + this.getGame_UUID());
 
         for (Player player : userSockets.getList()) {
 
@@ -148,7 +161,7 @@ public class TriviaGame implements Runnable {
 
     private void sendQuestion(SocketChannel socket, TriviaQuestion question) {
 
-        long time_left = TIMEOUT - (System.currentTimeMillis() - startTime) + 100;
+        long time_left = TIMEOUT - (System.currentTimeMillis() - startTime);
 
         String fullQuestion =
                 "********************************************************************\n\n"
@@ -167,7 +180,7 @@ public class TriviaGame implements Runnable {
         Player winner = null;
         int maxScore = 0;
 
-        /* check if all players have the same score */
+        // CHECK IF ALL SCORES ARE EQUAL
         boolean allEqual = true;
         for (Player socket : scores.keySet()) {
             if (!Objects.equals(scores.get(socket), scores.get(userSockets.get(0)))) {
@@ -178,6 +191,7 @@ public class TriviaGame implements Runnable {
 
         if (allEqual) return null;
 
+        // IF NOT, FIND THE MAX SCORE
         for (Player socket : scores.keySet()) {
             int score = scores.get(socket);
             if (score > maxScore) {

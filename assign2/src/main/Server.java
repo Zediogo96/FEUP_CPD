@@ -46,7 +46,7 @@ public class Server {
      */
     public static ConcurrentMap<String, String> disconnected_from_game = new ConcurrentMap<>();
 
-
+    // THREAD TO PERIODICALLY PRINT INFORMATION ABOUT THE SERVER STATUS
     static ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
 
@@ -58,9 +58,11 @@ public class Server {
         }
 
         try {
+
             Integer.parseInt(args[1]);
             Integer.parseInt(args[2]);
             Integer.parseInt(args[3]);
+
         } catch (NumberFormatException e) {
             System.out.println("Invalid arguments. Please specify a valid maximum number of game rooms and players per game");
             System.exit(1);
@@ -75,8 +77,8 @@ public class Server {
             System.exit(1);
         }
 
-        if (MAX_GAMES > 5) {
-            System.out.println("Invalid arguments. Maximum number of game rooms cannot be greater than 5");
+        if (MAX_GAMES > 8) {
+            System.out.println("Invalid arguments. Maximum number of game rooms cannot be greater than 8");
             System.exit(1);
         }
 
@@ -86,13 +88,12 @@ public class Server {
         }
 
         if (NUMBER_OF_ROUNDS > 8) {
-            System.out.println("Invalid arguments. Maximum number of rounds per game cannot be greater than 10");
+            System.out.println("Invalid arguments. Maximum number of rounds per game cannot be greater than 8");
             System.exit(1);
         }
 
         // LIST OF PLAYERS THAT ARE WAITING FOR A GAME
         waitingPlayers = new ArrayList<>();
-
         // THREAD POOL FOR ACTIVE GAMES, WITH A MAXIMUM OF **MAX_GAMES** THREADS
         ExecutorService threadPool = Executors.newFixedThreadPool(MAX_GAMES);
         // CHECK IF SERVER IS IN RANKED MODE, DEFAULT IS UNRANKED
@@ -111,8 +112,10 @@ public class Server {
 
         System.out.println(">> Server started on port " + PORT + " in " + (isRankedMode ? "ranked" : "unranked") + " mode");
 
+        // MAP OF SOCKETS AND THEIR RESPECTIVE BUFFERS
         Map<SocketChannel, ByteBuffer> bufferMap = new HashMap<>();
 
+        // THREAD TO PERIODICALLY PRINT INFORMATION ABOUT THE SERVER STATUS
         Runnable task = () -> {
             System.out.println("\n--------------------------------------------");
             System.out.println("Waiting players: " + waitingPlayers.size());
@@ -125,20 +128,24 @@ public class Server {
             }
         };
 
+        // SCHEDULE THE TASK TO RUN EVERY 10 SECONDS
         executor.scheduleAtFixedRate(task, 0, 10, TimeUnit.SECONDS);
 
         while (true) {
 
+            // CHECK THERE IS A ROOM AVAILABLE FOR A NEW GAME
             if (activeGames.size() < MAX_GAMES) {
 
                 if (isRankedMode) {
 
                     ConcurrentArrayList<Player> players;
 
+                    // IF THE METHOD DOESN'T RETURN NULL, IT MEANS IT WAS SUCCESSFUL
                     if ((players = (matchmakingAlgorithm(waitingPlayers))) != null) {
                         String uuid = UUID.randomUUID().toString();
+                        System.out.println("NUMBER OF ROUNDS: " + NUMBER_OF_ROUNDS);
                         TriviaGame game = new TriviaGame(NUMBER_OF_ROUNDS, players, uuid);
-                        /* set every player inGame */
+                        // SET EVERY PLAYER IN GAME
                         players.getList().forEach(player -> player.associateGameUUID_andInGame(uuid));
                         activeGames.put(game, uuid);
                         threadPool.execute(game);
@@ -146,12 +153,15 @@ public class Server {
                 } else {
                     if (waitingPlayers.size() >= PLAYERS_PER_GAME) {
                         ConcurrentArrayList<Player> players = new ConcurrentArrayList<>();
+
+                        // ADD PLAYERS FROM THE WAITING LIST TO THE GAME
                         for (int i = 0; i < PLAYERS_PER_GAME; i++) {
                             players.add(waitingPlayers.remove(0));
                             players.getList().get(i).setIsInGame(true);
                         }
 
                         String uuid = UUID.randomUUID().toString();
+
                         TriviaGame game = new TriviaGame(NUMBER_OF_ROUNDS, players, uuid);
                         activeGames.put(game, uuid);
                         threadPool.execute(game);
@@ -182,15 +192,18 @@ public class Server {
                 }
             }
 
+            // SELECTOR TIMEOUT
             int readyChannels = selector.select(TIMEOUT);
             if (readyChannels == 0) continue;
 
+            // NIO CHANNELS THAT ARE READY FOR IO OPERATIONS
             Iterator<SelectionKey> keyIterator = selector.selectedKeys().iterator();
-
+            // ITERATE THROUGH READY CHANNELS
             while (keyIterator.hasNext()) {
 
                 SelectionKey key = keyIterator.next();
 
+                // CLIENT SOCKET CHANNEL IS READY TO ACCEPT A NEW CONNECTION
                 if (key.isAcceptable()) {
 
                     SocketChannel clientSocketChannel = serverSocketChannel.accept();
@@ -216,7 +229,7 @@ public class Server {
                     byte[] bytes = new byte[buffer.remaining()];
                     buffer.get(bytes);
 
-                    // Split the message from the Client and trim it
+                    // SPLIT MESSAGE INTO PARTS
                     String message = new String(bytes);
 
                     if (message.isEmpty()) continue;
@@ -245,6 +258,7 @@ public class Server {
 
         Player player = findPlayerByChannel(clientSocketChannel);
 
+        // CHECK IF PLAYER IS IN GAME, SO HE CAN BE ADDED TO THE DISCONNECTED PLAYERS FROM GAMEMAP
         if (player.isInGame()) {
             String current_game_uuid = player.getCurrentGameUUID();
             disconnected_from_game.put(player.token, current_game_uuid);
@@ -276,6 +290,7 @@ public class Server {
         try (BufferedReader reader = new BufferedReader(new FileReader("main/data/users.txt"))) {
             String line;
 
+            // ITERATE THROUGH THE USERS FILE
             while ((line = reader.readLine()) != null) {
 
                 String[] parts = line.split(":");
@@ -296,6 +311,7 @@ public class Server {
                             TriviaGame game = activeGames.keySet().stream().filter(g -> g.getGame_UUID().equals(uuid)).findFirst().orElse(null);
                             if (game != null) {
                                 Utils.sendMessage(socket, "\nYou have been reconnected to your previous game.\n", "server");
+                                System.out.println("> Player " + player.getUserName() + " reconnected to game with UUID: " + uuid);
                                 game.addPlayer(player);
                                 disconnected_from_game.remove(player.getToken());
                                 break;
@@ -321,12 +337,12 @@ public class Server {
                         break;
                     } else {
                         System.out.println("> Authentication Failed for username: " + username);
-                        Utils.sendMessage(socket, "> Authentication Failed for username: " + username + ". Incorrect password.", "server");
+                        Utils.sendMessage(socket, "Authentication Failed for username: " + username + ". Incorrect password.", "server");
                     }
                 }
 
                 System.out.println("> Authentication Failed for username: " + username);
-                Utils.sendMessage(socket, "> Authentication failed for username: " + username + ". Username does not exist. \n", "server");
+                Utils.sendMessage(socket, "Authentication failed for username: " + username + ". Username does not exist. \n", "server");
                 socket.close();
                 return;
             }
@@ -377,7 +393,7 @@ public class Server {
         ConcurrentArrayList<Player> players = new ConcurrentArrayList<>();
         long now = System.currentTimeMillis();
 
-        /* create games according to player.getRank() and the maximum number of players per game */
+        // CREATE GAMES ACCORDING TO PLAYER.GETRANK() AND THE MAXIMUM NUMBER OF PLAYERS PER GAME
         for (int i = 0; i < waitingPlayers.size(); i++) {
 
             Player curr_player = waitingPlayers.get(i);
@@ -415,7 +431,6 @@ public class Server {
                 }
             }
         }
-
         // THERE WERE ARE NOT ENOUGH PLAYERS TO CREATE A GAME
         return null;
     }

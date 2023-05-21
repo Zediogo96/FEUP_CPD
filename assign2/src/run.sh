@@ -45,7 +45,7 @@ while getopts ":drtu" opt; do
               # - zeDiogo (1) and eduSilva (2) -> Group 1 -> 1200 & 1261
               # - afonsoFarroco (3) and suzanaDiogo (4) -> Group 2 -> 1100 & 1150
 
-        fuser -k 1234/tcp; clear; javac main/Server.java; java main.Server ranked 2 2 2 &
+        fuser -k 1234/tcp; clear; javac main/Server.java; java main.Server ranked 2 3 4 &
 
         # Wait for two seconds
         sleep 2
@@ -54,7 +54,7 @@ while getopts ":drtu" opt; do
         gnome-terminal -- bash -c "javac main/Client.java && java main/Client login zeDiogo apple1; exec bash"
         gnome-terminal -- bash -c "javac main/Client.java && java main/Client login eduSilva apple2; exec bash"
         gnome-terminal -- bash -c "javac main/Client.java && java main/Client login afonsoFarroco apple3; exec bash"
-        gnome-terminal -- bash -c "javac main/Client.java && java main/Client login suzanaDiogo apple4; exec bash"
+#        gnome-terminal -- bash -c "javac main/Client.java && java main/Client login suzanaDiogo apple4; exec bash"
 
         wait
       ;;
@@ -76,12 +76,12 @@ while getopts ":drtu" opt; do
             gnome-terminal -- bash -c "javac main/Client.java && java main/Client login zeDiogo apple1; exec bash"
             gnome-terminal -- bash -c "javac main/Client.java && java main/Client login eduSilva apple2; exec bash"
             gnome-terminal -- bash -c "javac main/Client.java && java main/Client login afonsoFarroco apple3; exec bash"
-            gnome-terminal -- bash -c "javac main/Client.java && java main/Client login suzanaDiogo apple4; exec bash"
+#            gnome-terminal -- bash -c "javac main/Client.java && java main/Client login suzanaDiogo apple4; exec bash"
 
             wait
           ;;
 
-    \? ) echo "Usage: myscript.sh [-t || -u || -r]"
+    \? ) echo "Usage: myscript.sh [-t || -u || -r || -d
          exit 1
       ;;
   esac

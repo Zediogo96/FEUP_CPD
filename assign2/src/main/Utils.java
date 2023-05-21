@@ -37,7 +37,7 @@ public final class Utils {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        assert message != null;
+        if ((message == null || message.isEmpty())) message = "type->answer~content->0\n";
         return Utils.deserializeMessage(message);
     }
     

@@ -33,6 +33,9 @@ java main.Client login zediogo apple1
 ## Usage
 
 In order to facilitate the testing of our project, we've prepared two scripts that will run the server and the client in different terminals automatically, according to some of the use / testing cases.
+
+These scripts are meant to work in a Linux environment, and were tested in Ubuntu 20.04.1 LTS.
+
 The two scripts are:
 - run.sh
 - ct.sh (close all the open terminals except the one where this script is executed)
@@ -133,3 +136,11 @@ r ) # Play Test for 2 games of 2 players each in ranked mode
         wait
       ;;
 ```
+
+#### Cleaning all the .class files
+
+This part of the script will remove all the .class files from the /src/main folder, so that we can compile the code again without any problems.
+```bash
+# Command to execute the script
+./run.sh -d
+``
