@@ -143,4 +143,11 @@ This part of the script will remove all the .class files from the /src/main fold
 ```bash
 # Command to execute the script
 ./run.sh -d
-``
+```
+
+# Group members:
+
+1. Afonso Martins (up202005900@edu.fe.up.pt)
+2. Eduardo Silva (up202005283@edu.fe.up.pt)
+3. José Diogo Pinto (up202003529@edu.fe.up.pt)
+
