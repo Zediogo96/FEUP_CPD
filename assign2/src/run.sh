@@ -81,7 +81,7 @@ while getopts ":drtu" opt; do
             wait
           ;;
 
-    \? ) echo "Usage: myscript.sh [-t || -u || -r || -d
+    \? ) echo "Usage: myscript.sh [-t || -u || -r || -d]"
          exit 1
       ;;
   esac
